@@ -37,7 +37,7 @@ namespace PhySandbox
 
             world = new World( buffer, new Rectangle( 0, 0, panel1.Width, panel1.Height - 1 ) );
             world.Gravity.x = 0;
-            world.Gravity.y = 0;
+            world.Gravity.y = 3;
             world.AirFriction = 0.001f;
 
             world.Collisions = true;
@@ -59,21 +59,21 @@ namespace PhySandbox
             lastLocation = this.Location;
 
             Random r = new Random();
-            int x = 3;
-            Sphere[] ss = new Sphere[ x ];
+            //int x = 8;
+            //Sphere[] ss = new Sphere[ x ];
 
 
-            for (int i = 0; i < x; ++i)
-            {
-                ss[ i ] = new Sphere( world );
-                ss[ i ].Location = new Vector( 200 + r.Next( 200 ), 200 + r.Next( 200 ) );
-                ss[ i ].Mass = 1;
-                ss[ i ].Radius = 5;
-                ss[ i ].Elasticity = 0.5f;
-                ss[ i ].Clr = Color.FromArgb( 60, 150, 160 );
-                ss[ i ].GravityStrength = -10f;
-                world.AddSphere( ss[ i ] );
-            }
+            //for (int i = 0; i < x; ++i)
+            //{
+            //    ss[ i ] = new Sphere( world );
+            //    ss[ i ].Location = new Vector( 200 + r.Next( 200 ), 200 + r.Next( 200 ) );
+            //    ss[ i ].Mass = 1;
+            //    ss[ i ].Radius = 5;
+            //    ss[ i ].Elasticity = 0.5f;
+            //    ss[ i ].Clr = Color.FromArgb( 60, 150, 160 );
+            //    ss[ i ].GravityStrength = -10f;
+            //    world.AddSphere( ss[ i ] );
+            //}
 
             //int k = 1;
             //int length = 50;
@@ -90,13 +90,13 @@ namespace PhySandbox
             //world.AddSpring( ss[ 5 ], ss[ 6 ], k, length );
             //world.AddSpring( ss[ 6 ], ss[ 7 ], k, length );
 
-            for (int i = 0; i < x - 1; ++i)
-            {
-                for (int j = i + 1; j < x; ++j)
-                {
-                    world.AddSpring( ss[ i ], ss[ j ], 1, 200 );
-                }
-            }
+            //for (int i = 0; i < x - 1; ++i)
+            //{
+            //    for (int j = i + 1; j < x; ++j)
+            //    {
+            //        world.AddSpring( ss[ i ], ss[ j ], 1, 200 );
+            //    }
+            //}
 
             //int x = 8;
 
@@ -109,11 +109,11 @@ namespace PhySandbox
             //    {
             //        ss[ i, j ] = new Sphere( world );
             //        Sphere s = ss[ i, j ];
-            //        s.Location = new Vector( 240 + r.Next( 210 ), 240 + r.Next( 210 ) );
+            //        s.Location = new Vector( 140 + r.Next( 210 ), 140 + r.Next( 210 ) );
             //        //s.Location = new Vector( 200 + i * 10, 200 + j * 10 );
             //        s.Mass = 1;
             //        s.Radius = 2;
-            //        s.GravityStrength = -0.11f;
+            //        s.GravityStrength = -0.91f;
             //        world.AddSphere( s );
             //    }
             //}
@@ -136,12 +136,12 @@ namespace PhySandbox
             //                    //}
             //                    if (Math.Abs( i - k ) == 1 && j == l)
             //                    {
-            //                        //if (r.Next(100) < 80)
+            //                        if (r.Next(100) < 80)
             //                        world.AddSpring( ss[ i, j ], ss[ k, l ], 1, 20 );
             //                    }
             //                    if (Math.Abs( j - l ) == 1 && i == k)
             //                    {
-            //                        //if (r.Next( 100 ) < 80)
+            //                        if (r.Next( 100 ) < 80)
             //                        world.AddSpring( ss[ i, j ], ss[ k, l ], 1, 20 );
             //                    }
             //                }
@@ -156,7 +156,7 @@ namespace PhySandbox
         private void panel1_MouseUp( object sender, MouseEventArgs e )
         {
             if (e.Button == MouseButtons.Left)
-                world.AddSphere( e.X, e.Y, 0, 0, 50, 100, 0.9f, 0, Color.Blue, false );
+                world.AddSphere( e.X, e.Y, 0, 0, 55, 100, 0.9f, 0, Color.Blue, false );
 
             if (e.Button == MouseButtons.Middle)
                 world.AddSphere( e.X, e.Y, 0, 0, 30, 70, 0.5f, 1f, Color.Brown, true );
@@ -219,7 +219,7 @@ namespace PhySandbox
 
         private void panel1_MouseLeave( object sender, EventArgs e )
         {
-            labelLocation.Text = "(0, 0)";
+            labelLocation.Text = "";
         }
 
         private void buttonAddMrte_Click( object sender, EventArgs e )
@@ -233,7 +233,7 @@ namespace PhySandbox
                 Color c = Color.FromArgb( r.Next( 256 ), r.Next( 256 ), r.Next( 256 ) );
 
                 //%%% aby to generovalo navolene
-                world.AddSphere( x, y, 0, 0, 3, 3.141592653589f, 0.9f, 0, c, false );
+                world.AddSphere( x, y, 0, 0, 3, 1, 0.9f, 0, c, false );
             }
 
             labelBalls.Text = world.SpheresCount().ToString();
@@ -251,11 +251,6 @@ namespace PhySandbox
             {
                 //label4.Text = ex.Message;
             }
-        }
-
-        private void button1_Click( object sender, EventArgs e )
-        {
-            //%%%
         }
     }
 }
