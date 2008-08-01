@@ -7,9 +7,9 @@ namespace Physics
     public class World
     {
         //private List<PhysicsObject> objects;
-        private List<Sphere> spheres;
+        public List<Sphere> spheres;
+        public List<Board> boards;
         private List<Spring> springs;
-        private List<Board> boards;
 
         public Rectangle Bounds;
         public Vector Gravity;
@@ -42,15 +42,6 @@ namespace Physics
 
         public void Tick( float time )
         {
-            //%%%
-            //foreach (Sphere sphere in spheres)
-            //{
-            //    if (sphere.GravityStrength != 0)
-            //    {
-            //        sphere.ApplyGravity( spheres );
-            //    }
-            //}
-
             foreach (Sphere sphere in spheres)
             {
                 sphere.Tick( time );
@@ -62,16 +53,8 @@ namespace Physics
                 {
                     for (int j = i + 1; j < spheres.Count; ++j)
                     {
-                        resolveCollision( spheres[ i ], spheres[ j ] );
+                        spheresCollision( spheres[ i ], spheres[ j ] );
                     }
-                }
-            }
-
-            foreach (Sphere sphere in spheres)
-            {
-                if (sphere.GravityStrength != 0)
-                {
-                    sphere.ApplyGravity( time, spheres );
                 }
             }
 
@@ -172,37 +155,37 @@ namespace Physics
             board.End.y = y2;
         }
 
-        private static bool resolveCollision( PhysicsObject obj1, PhysicsObject obj2 )
-        {
-            if (obj1 != obj2)
-            {
+        //private static bool resolveCollision( PhysicsObject obj1, PhysicsObject obj2 )
+        //{
+        //    if (obj1 != obj2)
+        //    {
 
-                if (obj1 is Sphere)
-                {
-                    Sphere sphere1 = obj1 as Sphere;
-                    if (obj2 is Sphere)
-                    {
-                        Sphere sphere2 = obj2 as Sphere;
-                        return spheresCollision( sphere1, sphere2 );
-                    }
+        //        if (obj1 is Sphere)
+        //        {
+        //            Sphere sphere1 = obj1 as Sphere;
+        //            if (obj2 is Sphere)
+        //            {
+        //                Sphere sphere2 = obj2 as Sphere;
+        //                return spheresCollision( sphere1, sphere2 );
+        //            }
 
-                    // if (obj2 is Board) %%%
-                }
-                else
-                {
-                    //if (obj1 is Board) %%%
-                    //{
-                    //    if (obj2 is Sphere)
-                    //    {
-                    //        Sphere sphere1 = obj2 as Sphere;
-                    //        Board Board = obj1 as Board;
-                    //        return sphereReflectorCollision( sphere1, Board );
-                    //    }
-                    //}
-                }
-            }
-            return false;
-        }
+        //            // if (obj2 is Board) %%%
+        //        }
+        //        else
+        //        {
+        //            //if (obj1 is Board) %%%
+        //            //{
+        //            //    if (obj2 is Sphere)
+        //            //    {
+        //            //        Sphere sphere1 = obj2 as Sphere;
+        //            //        Board Board = obj1 as Board;
+        //            //        return sphereReflectorCollision( sphere1, Board );
+        //            //    }
+        //            //}
+        //        }
+        //    }
+        //    return false;
+        //}
 
         private static bool spheresCollision( Sphere sphere1, Sphere sphere2 )
         {
@@ -286,13 +269,6 @@ namespace Physics
                 }
                 return true;
             }
-            return false;
-        }
-
-        private static bool sphereBoardCollision( Sphere sphere, Board board )
-        {
-            // %%% nakresy, rovnobezky, hladanie kruznic, geometria
-            // jednoducha (matusova) vs. zlozita (snad bude) verzia
             return false;
         }
     }
