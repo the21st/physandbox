@@ -1,4 +1,4 @@
-﻿		qd	qwd	qwd	qwdusing System;
+﻿using System;
 using System.Drawing;
 using System.Collections.Generic;
 
@@ -6,7 +6,7 @@ namespace Physics
 {
     public class Sphere : PhysicsObject
     {
-        private const float edgeWidth = 0.1f;
+        private const float edgeWidth = 0.1f; //pomer okraju gule voci polomeru
 
         public Vector Location, Velocity;
         public float Radius, Mass, Elasticity, GravityStrength;
@@ -36,9 +36,12 @@ namespace Physics
                 acceleration -= (world.AirFriction * Velocity.Abs()) * Velocity;
                 Velocity += time * acceleration;
 
-                Location += time * Velocity;
+                //Location += time * Velocity;
+                this.move( time );
 
                 this.keepInBounds( world.Bounds ); //%%% sem dorobit steny on/off
+
+                this.applyGravity( time ); //%%% na zaciatku alebo na konci?
             }
         }
 
@@ -58,7 +61,7 @@ namespace Physics
                 Color c = Color.FromArgb( red, green, blue );
                 Pen p = new Pen( c );
                 p.Width = Radius * edgeWidth < 1 ? 1 : Radius * edgeWidth;
-                
+
                 Sphere tmp = new Sphere( null );
                 tmp.Location = Location;
                 tmp.Radius = Radius - p.Width / 2;
@@ -77,8 +80,9 @@ namespace Physics
             }
         }
 
-        public void ApplyGravity( float time, List<Sphere> spheres )
+        private void applyGravity( float time )
         {
+            List<Sphere> spheres = world.spheres;
             foreach (Sphere sphere in spheres)
             {
                 if (sphere != this && this.GravityStrength != 0 && !sphere.Stationary)
@@ -114,7 +118,7 @@ namespace Physics
                 Location.y = bounds.Top + Radius;
             }
 
-            // --------ZEM--------
+            // -------PODLAHA--------
             if (Location.y + Radius > bounds.Bottom)
             {
                 if (Velocity.y > 0)
@@ -140,6 +144,16 @@ namespace Physics
             }
 
             return false;
+        }
+
+        private void move( float time )
+        {
+            List<Board> boards = world.boards;
+
+            //%%% pokracuj
+
+
+            Location += time * Velocity;
         }
 
         public Rectangle GetRectangle()
