@@ -8,7 +8,7 @@ namespace Physics
 
         public Vector()
         {
-            x = y = 0f;
+            x = y = 0;
         }
 
         public Vector( int x, int y )
@@ -21,6 +21,12 @@ namespace Physics
         {
             this.x = x;
             this.y = y;
+        }
+
+        public Vector( Vector v )
+        {
+            this.x = v.x;
+            this.y = v.y;
         }
 
         public float Abs()
@@ -41,6 +47,16 @@ namespace Physics
         public static float ProjectionLength( Vector v, Vector target )
         {
             return (v * target) / target.Abs();
+        }
+
+        public static bool AreParallel( Vector v1, Vector v2 )
+        {
+            return ((v1.x * v2.y) == (v1.y * v2.x));
+        }
+
+        public static bool AreEqual( Vector v1, Vector v2 )
+        {
+            return ((v1.x == v2.x) && (v1.y == v2.y));
         }
 
         public static Vector operator +( Vector v1, Vector v2 )

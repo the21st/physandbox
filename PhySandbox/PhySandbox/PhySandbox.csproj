@@ -33,7 +33,7 @@
   <ItemGroup>
     <Reference Include="Physics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Physics\Physics\bin\Release\Physics.dll</HintPath>
+      <HintPath>..\..\Physics\bin\Release\Physics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
