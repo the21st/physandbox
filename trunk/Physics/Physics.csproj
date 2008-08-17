@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Line.cs" />
     <Compile Include="PhysicsObject.cs" />
     <Compile Include="Board.cs" />
     <Compile Include="Sphere.cs" />
