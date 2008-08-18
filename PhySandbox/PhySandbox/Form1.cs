@@ -37,7 +37,7 @@ namespace PhySandbox
 
             world = new World( buffer, new Rectangle( 0, 0, panel1.Width, panel1.Height - 1 ) );
             world.Gravity.x = 0;
-            world.Gravity.y = 3;
+            world.Gravity.y = 1;
             world.AirFriction = 0.001f;
 
             world.Collisions = true;
@@ -169,8 +169,8 @@ namespace PhySandbox
 
         private void timer1_Tick( object sender, EventArgs e )
         {
-            float speed = 1f;
-            world.Tick( 0.1f * speed );
+            float speed = 0.3f;
+            world.Tick( speed );
 
             world.Render(); // naplnanie bufferu
             //this.Render();

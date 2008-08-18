@@ -39,6 +39,18 @@ namespace Physics
             return this / this.Abs();
         }
 
+        public Vector Perpendicular()
+        {
+            if (this.x == 0)
+            {
+                float y2 = -this.x / this.y;
+                return new Vector( 1, y2 );
+            }
+
+            float x2 = -this.y / this.x;
+            return new Vector( x2, 1 );
+        }
+
         public static Vector Projection( Vector v, Vector target )
         {
             return ((v * target) / (target.Abs() * target.Abs())) * target;

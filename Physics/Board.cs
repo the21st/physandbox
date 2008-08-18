@@ -5,13 +5,12 @@ namespace Physics
 {
     public class Board : PhysicsObject
     {
-        public Vector Start, End;
+        public Line line;
         public Color Clr;
 
         public Board( World world )
         {
-            Start = new Vector();
-            End = new Vector();
+            line = new Line();
             Clr = Color.Black;
         }
 
@@ -26,7 +25,7 @@ namespace Physics
             Pen p = new Pen( Clr );
             //p.Width = 1; //%%%
 
-            g.DrawLine( p, Start.x, Start.y, End.x, End.y );
+            g.DrawLine( p, line.Start.x, line.Start.y, line.End.x, line.End.y );
 
             p.Dispose();
         }
