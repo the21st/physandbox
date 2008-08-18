@@ -36,8 +36,8 @@ namespace Physics
                 acceleration -= (world.AirFriction * Velocity.Abs()) * Velocity;
                 Velocity += time * acceleration;
 
-                //Location += time * Velocity;
-                this.move( time );
+                Location += time * Velocity;
+                //this.move( time ); %%%
 
                 this.keepInBounds( world.Bounds ); //%%% sem dorobit steny on/off
 
@@ -150,6 +150,8 @@ namespace Physics
         {
             List<Board> boards = world.boards;
 
+
+
             //%%% pokracuj
 
 
@@ -158,7 +160,15 @@ namespace Physics
 
         public Rectangle GetRectangle()
         {
-            return new Rectangle( Convert.ToInt32( Location.x - Radius ), Convert.ToInt32( Location.y - Radius ), Convert.ToInt32( 2 * Radius ), Convert.ToInt32( 2 * Radius ) );
+            try
+            {
+                return new Rectangle( Convert.ToInt32( Location.x - Radius ), Convert.ToInt32( Location.y - Radius ), Convert.ToInt32( 2 * Radius ), Convert.ToInt32( 2 * Radius ) );
+            }
+            catch (OverflowException e)
+            {
+                // nejaky error?
+            }
+            return new Rectangle( -1, -1, -1, -1 );
         }
 
         public bool IsAtLocation( float x, float y )

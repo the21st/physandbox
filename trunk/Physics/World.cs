@@ -6,7 +6,14 @@ namespace Physics
 {
     public class World
     {
+        // docasna metoda
+        //public static void RenderLine(Graphics g, Line line)
+        //{
+        //    g.DrawLine( new Pen( Color.Black ), line.Start.x, line.Start.y, line.End.x, line.End.y );
+        //}
+
         //private List<PhysicsObject> objects;
+
         public List<Sphere> spheres;
         public List<Board> boards;
         private List<Spring> springs;
@@ -149,10 +156,10 @@ namespace Physics
         public void AddBoard( float x1, float y1, float x2, float y2 )
         {
             Board board = new Board( this );
-            board.Start.x = x1;
-            board.Start.y = y1;
-            board.End.x = x2;
-            board.End.y = y2;
+            board.line.Start.x = x1;
+            board.line.Start.y = y1;
+            board.line.End.x = x2;
+            board.line.End.y = y2;
         }
 
         //private static bool resolveCollision( PhysicsObject obj1, PhysicsObject obj2 )
