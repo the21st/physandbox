@@ -63,7 +63,7 @@ namespace Physics
 
             float disc = b * b - 4 * a * c;
 
-            if (disc <= 0)
+            if (disc < 0)
                 return false;
 
             float u = (float)((-b + Math.Sqrt( disc )) / (2 * a));
@@ -195,6 +195,7 @@ namespace Physics
         public static List<Vector> Intersection( Sphere sphere, Line line )
         {
             float a, b, c;
+            List<Vector> result = new List<Vector>();
 
             a = (line.End.x - line.Start.x) * (line.End.x - line.Start.x) + (line.End.y - line.Start.y) * (line.End.y - line.Start.y);
             b = 2 * ((line.End.x - line.Start.x) * (line.Start.x - sphere.Location.x) + (line.End.y - line.Start.y) * (line.Start.y - sphere.Location.y));
@@ -204,9 +205,7 @@ namespace Physics
             float disc = b * b - 4 * a * c;
 
             if (disc < 0)
-                return null;
-
-            List<Vector> result = new List<Vector>();
+                return result;
 
             float u = (float)((-b + Math.Sqrt( disc )) / (2 * a));
 
@@ -226,7 +225,7 @@ namespace Physics
             return result;
         }
 
-        public static Vector Collision( Sphere sphere, Board board, float time )
+        public static CollisionInfo Collision( Sphere sphere, Board board, float time )
         {
             Vector movement = time * sphere.Velocity;
 
@@ -243,6 +242,7 @@ namespace Physics
             sphereMoved.Location = sphere.Location + movement;
             sphereMoved.Radius = sphere.Radius;
 
+
             if (Intersects( move, board.line ) ||
                 Intersects( moveLeft, board.line ) ||
                 Intersects( moveRight, board.line ) ||
@@ -257,19 +257,19 @@ namespace Physics
                 sphereTmp.Location = board.line.Start;
                 List<Vector> listTmp = Intersection( sphereTmp, move );
 
-                if (listTmp != null)
+                foreach (Vector v in listTmp)
                 {
-                    foreach (Vector v in listTmp)
-                        intersectionList.Add( v );
+                    v.Tag = 2;
+                    intersectionList.Add( v );
                 }
 
                 sphereTmp.Location = board.line.End;
                 listTmp = Intersection( sphereTmp, move );
 
-                if (listTmp != null)
+                foreach (Vector v in listTmp)
                 {
-                    foreach (Vector v in listTmp)
-                        intersectionList.Add( v );
+                    v.Tag = 2;
+                    intersectionList.Add( v );
                 }
 
 
@@ -291,34 +291,42 @@ namespace Physics
 
                 if (pointOnLine( intersection1 + shift, board.line ) || pointOnLine( intersection1 - shift, board.line ))
                 {
+                    intersection1.Tag = 1;
                     intersectionList.Add( intersection1 );
                 }
 
                 if (pointOnLine( intersection2 + shift, board.line ) || pointOnLine( intersection2 - shift, board.line ))
                 {
+                    intersection2.Tag = 1;
                     intersectionList.Add( intersection2 );
                 }
 
-                float min = int.MaxValue;
-                Vector minV = null;
-                float dist;
 
-                foreach (Vector v in intersectionList)
+                if (intersectionList.Count > 0)
                 {
-                    dist = (v - sphere.Location).Abs();
-                    if ((dist < min) && (pointOnLine( v, move )))
-                    {
-                        min = dist;
-                        minV = v;
-                    }
-                }
+                    float min = int.MaxValue;
+                    Vector minV = null;
+                    float dist;
 
-                return minV;
+                    foreach (Vector v in intersectionList)
+                    {
+                        dist = (v - sphere.Location).Abs();
+                        if ((dist < min) && (pointOnLine( v, move )))
+                        {
+                            min = dist;
+                            minV = v;
+                        }
+                    }
+
+                    if (minV == null)
+                        return null;
+
+                    CollisionInfo result = new CollisionInfo( minV, board, minV.Tag );
+
+                    return result;
+                }
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
     }
 }

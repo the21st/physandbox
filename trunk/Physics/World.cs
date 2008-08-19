@@ -6,14 +6,6 @@ namespace Physics
 {
     public class World
     {
-        // docasna metoda
-        //public static void RenderLine(Graphics g, Line line)
-        //{
-        //    g.DrawLine( new Pen( Color.Black ), line.Start.x, line.Start.y, line.End.x, line.End.y );
-        //}
-
-        //private List<PhysicsObject> objects;
-
         public List<Sphere> spheres;
         public List<Board> boards;
         private List<Spring> springs;
@@ -49,11 +41,6 @@ namespace Physics
 
         public void Tick( float time )
         {
-            foreach (Sphere sphere in spheres)
-            {
-                sphere.Tick( time );
-            }
-
             if (Collisions)
             {
                 for (int i = 0; i < spheres.Count - 1; ++i)
@@ -68,6 +55,12 @@ namespace Physics
             foreach (Spring spring in springs)
             {
                 spring.Tick( time );
+            }
+
+
+            foreach (Sphere sphere in spheres)
+            {
+                sphere.Tick( time );
             }
 
             //foreach (Sphere sphere1 in spheres)
@@ -92,6 +85,11 @@ namespace Physics
             foreach (Spring spring in springs)
             {
                 spring.Render();
+            }
+
+            foreach (Board board in boards)
+            {
+                board.Render();
             }
         }
 
@@ -160,39 +158,10 @@ namespace Physics
             board.line.Start.y = y1;
             board.line.End.x = x2;
             board.line.End.y = y2;
+
+            board.Render();
+            boards.Add( board );
         }
-
-        //private static bool resolveCollision( PhysicsObject obj1, PhysicsObject obj2 )
-        //{
-        //    if (obj1 != obj2)
-        //    {
-
-        //        if (obj1 is Sphere)
-        //        {
-        //            Sphere sphere1 = obj1 as Sphere;
-        //            if (obj2 is Sphere)
-        //            {
-        //                Sphere sphere2 = obj2 as Sphere;
-        //                return spheresCollision( sphere1, sphere2 );
-        //            }
-
-        //            // if (obj2 is Board) %%%
-        //        }
-        //        else
-        //        {
-        //            //if (obj1 is Board) %%%
-        //            //{
-        //            //    if (obj2 is Sphere)
-        //            //    {
-        //            //        Sphere sphere1 = obj2 as Sphere;
-        //            //        Board Board = obj1 as Board;
-        //            //        return sphereReflectorCollision( sphere1, Board );
-        //            //    }
-        //            //}
-        //        }
-        //    }
-        //    return false;
-        //}
 
         private static bool spheresCollision( Sphere sphere1, Sphere sphere2 )
         {
