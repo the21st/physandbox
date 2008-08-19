@@ -65,7 +65,20 @@ namespace Physics
 
             if (disc <= 0)
                 return false;
-            return true;
+
+            float u = (float)((-b + Math.Sqrt( disc )) / (2 * a));
+            Vector p1 = line.Start + u * (line.End - line.Start);
+
+            if (pointOnLine( p1, line ))
+                return true;
+
+            float v = (float)((-b - Math.Sqrt( disc )) / (2 * a));
+            Vector p2 = line.Start + v * (line.End - line.Start);
+
+            if (pointOnLine( p2, line ))
+                return true;
+
+            return false;
         }
 
         private static bool pointOnLine( Vector point, Line line )
@@ -226,78 +239,86 @@ namespace Physics
             Line moveLeft = new Line( sphere.Location + tmp, sphere.Location + tmp + movement );
             Line moveRight = new Line( sphere.Location - tmp, sphere.Location - tmp + movement );
 
-            if (Intersects( move, board.line ))
+            Sphere sphereMoved = new Sphere( null );
+            sphereMoved.Location = sphere.Location + movement;
+            sphereMoved.Radius = sphere.Radius;
+
+            if (Intersects( move, board.line ) ||
+                Intersects( moveLeft, board.line ) ||
+                Intersects( moveRight, board.line ) ||
+                Intersects( sphereMoved, board.line ))
             {
-                if (areParallel( move, board.line ))
+                List<Vector> intersectionList = new List<Vector>();
+
+
+                Sphere sphereTmp = new Sphere( null );
+                sphereTmp.Radius = sphere.Radius;
+
+                sphereTmp.Location = board.line.Start;
+                List<Vector> listTmp = Intersection( sphereTmp, move );
+
+                if (listTmp != null)
                 {
-                    float min = int.MaxValue;
-                    Vector minV = null;
-                    List<Vector> intersectionList;
-                    Sphere sphereTmp = new Sphere( null );
-                    sphereTmp.Radius = sphere.Radius;
-
-
-                    sphereTmp.Location = board.line.Start;
-                    intersectionList = Intersection( sphereTmp, board.line );
-
-                    foreach (Vector v in intersectionList)
-                    {
-                        float dist = (v - sphere.Location).Abs();
-                        if ((dist < min) && (pointOnLine( v, move )))
-                        {
-                            min = dist;
-                            minV = v;
-                        }
-                    }
-
-                    sphereTmp.Location = board.line.End;
-                    intersectionList = Intersection( sphereTmp, board.line );
-
-                    foreach (Vector v in intersectionList)
-                    {
-                        float dist = (v - sphere.Location).Abs();
-                        if ((dist < min) && (pointOnLine( v, move )))
-                        {
-                            min = dist;
-                            minV = v;
-                        }
-                    }
-
-                    return minV;
+                    foreach (Vector v in listTmp)
+                        intersectionList.Add( v );
                 }
-                else
+
+                sphereTmp.Location = board.line.End;
+                listTmp = Intersection( sphereTmp, move );
+
+                if (listTmp != null)
                 {
-                    Line parallel1 = new Line( board.line );
-                    Line parallel2 = new Line( board.line );
-
-                    Vector tmpV = (parallel1.End - parallel1.Start).Perpendicular();
-                    tmpV = tmpV.Normalized();
-                    tmpV = sphere.Radius * tmpV;
-
-                    parallel1.Start = parallel1.Start + tmpV;
-                    parallel1.End = parallel1.End + tmpV;
-
-                    parallel2.Start = parallel2.Start - tmpV;
-                    parallel2.End = parallel2.End - tmpV;
-
-                    Vector intersection1 = lineIntersection( move, parallel1 );
-                    Vector intersection2 = lineIntersection( move, parallel2 );
-
-                    if ((intersection1 - sphere.Location).Abs() < (intersection2 - sphere.Location).Abs())
-                        return intersection1;
-                    return intersection2;
+                    foreach (Vector v in listTmp)
+                        intersectionList.Add( v );
                 }
+
+
+                Line parallel1 = new Line( board.line );
+                Line parallel2 = new Line( board.line );
+
+                Vector shift = (parallel1.End - parallel1.Start).Perpendicular();
+                shift = shift.Normalized();
+                shift = sphere.Radius * shift;
+
+                parallel1.Start = parallel1.Start + shift;
+                parallel1.End = parallel1.End + shift;
+
+                parallel2.Start = parallel2.Start - shift;
+                parallel2.End = parallel2.End - shift;
+
+                Vector intersection1 = lineIntersection( move, parallel1 );
+                Vector intersection2 = lineIntersection( move, parallel2 );
+
+                if (pointOnLine( intersection1 + shift, board.line ) || pointOnLine( intersection1 - shift, board.line ))
+                {
+                    intersectionList.Add( intersection1 );
+                }
+
+                if (pointOnLine( intersection2 + shift, board.line ) || pointOnLine( intersection2 - shift, board.line ))
+                {
+                    intersectionList.Add( intersection2 );
+                }
+
+                float min = int.MaxValue;
+                Vector minV = null;
+                float dist;
+
+                foreach (Vector v in intersectionList)
+                {
+                    dist = (v - sphere.Location).Abs();
+                    if ((dist < min) && (pointOnLine( v, move )))
+                    {
+                        min = dist;
+                        minV = v;
+                    }
+                }
+
+                return minV;
             }
             else
             {
-
+                return null;
             }
-
-
-
-
-
-            return null;
         }
     }
 }
