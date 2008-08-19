@@ -5,6 +5,7 @@ namespace Physics
     public class Vector
     {
         public float x, y;
+        public byte Tag = 0;
 
         public Vector()
         {

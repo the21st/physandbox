@@ -36,8 +36,8 @@ namespace Physics
                 acceleration -= (world.AirFriction * Velocity.Abs()) * Velocity;
                 Velocity += time * acceleration;
 
-                Location += time * Velocity;
-                //this.move( time ); %%%
+                //Location += time * Velocity;
+                this.move( time ); //%%%
 
                 this.keepInBounds( world.Bounds ); //%%% sem dorobit steny on/off
 
@@ -149,13 +149,74 @@ namespace Physics
         private void move( float time )
         {
             List<Board> boards = world.boards;
+            List<CollisionInfo> collisions = new List<CollisionInfo>();
 
+            foreach (Board board in boards)
+            {
+                CollisionInfo collision = Geometry.Collision(this, board, time);
+                if (collision != null)
+                    collisions.Add( collision );
+            }
 
+            CollisionInfo closest = null;
 
-            //%%% pokracuj
+            if (collisions.Count > 0)
+            {
+                float min = int.MaxValue;
+                float dist;
 
+                foreach (CollisionInfo ci in collisions)
+                {
+                    Vector v = ci.Location;
+                    dist = (v - this.Location).Abs();
+                    if (dist < min)
+                    {
+                        min = dist;
+                        closest = ci;
+                    }
+                }
+            }
+            else
+            {
+                Location += time * Velocity;
+                return;
+            }
 
-            Location += time * Velocity;
+            Board b = closest.With;
+
+            if (closest.Type == 1)
+            {
+                Vector vx1 = Vector.Projection( this.Velocity, b.line.End - b.line.Start );
+                Vector vy1 = this.Velocity - vx1;
+
+                Vector newVy1 = -this.Elasticity * vy1;
+
+                this.Velocity = newVy1 + vx1;
+            }
+
+            if (closest.Type == 2)
+            {
+                Vector p1 = b.line.Start;
+                Vector p2 = b.line.End;
+                Vector pointOfCollision;
+
+                if ((closest.Location - p1).Abs() < (closest.Location - p2).Abs())
+                    pointOfCollision = p1;
+                else
+                    pointOfCollision = p2;
+
+                Vector temp = pointOfCollision - closest.Location;
+                //temp = temp.Perpendicular();
+
+                Vector vx1 = Vector.Projection( this.Velocity, temp );
+                Vector vy1 = this.Velocity - vx1;
+
+                Vector newVx1 = -this.Elasticity * vx1;
+
+                this.Velocity = newVx1 + vy1;
+            }
+
+            this.Location = closest.Location;
         }
 
         public Rectangle GetRectangle()

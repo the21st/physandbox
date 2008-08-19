@@ -150,13 +150,16 @@ namespace PhySandbox
             //    }
             //}
 
+            //world.AddBoard( 100, 100, panel1.Width / 2, panel1.Height / 2 );
+            //world.AddBoard( panel1.Width / 2, panel1.Height / 2, panel1.Width - 100, 100 );
+
             labelBalls.Text = world.SpheresCount().ToString();
         }
 
         private void panel1_MouseUp( object sender, MouseEventArgs e )
         {
             if (e.Button == MouseButtons.Left)
-                world.AddSphere( e.X, e.Y, 0, 0, 55, 100, 0.9f, 0, Color.Blue, false );
+                world.AddSphere( e.X, e.Y, 0, 0, 20, 100, 0.9f, 0, Color.Blue, false );
 
             if (e.Button == MouseButtons.Middle)
                 world.AddSphere( e.X, e.Y, 0, 0, 30, 70, 0.5f, 1f, Color.Brown, true );
@@ -187,7 +190,7 @@ namespace PhySandbox
                 start = DateTime.Now.ToFileTime();
             }
 
-            
+
             ////---sranda---
 
             //int dx = lastLocation.X - Location.X;

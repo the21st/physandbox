@@ -10,6 +10,7 @@ namespace Physics
 
         public Board( World world )
         {
+            this.world = world;
             line = new Line();
             Clr = Color.Black;
         }
