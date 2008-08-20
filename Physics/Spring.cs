@@ -8,7 +8,6 @@ namespace Physics
         private const float densityPer100 = 9; // pocet "pruziniek" na 100px pri default width
         private const int defaultWidth = 10;
 
-        public Color Clr;
         float width;
 
         Sphere sphere1, sphere2;
@@ -57,6 +56,37 @@ namespace Physics
             Graphics g = world.Graph;
             Pen p = new Pen( this.Clr );
 
+            if (selected)
+            {
+                p.Width = 2;
+
+                if (phase >= maxChange)
+                    brighter = false;
+                if (phase <= -maxChange)
+                    brighter = true;
+
+                int red = Clr.R;
+                int green = Clr.G;
+                int blue = Clr.B;
+
+                if (brighter)
+                {
+                    red = red + 3 > 255 ? 255 : red + 3;
+                    green = green + 3 > 255 ? 255 : green + 3;
+                    blue = blue + 3 > 255 ? 255 : blue + 3;
+                    Clr = Color.FromArgb( red, green, blue );
+                    phase++;
+                }
+                else
+                {
+                    red = red - 3 < 0 ? 0 : red - 3;
+                    green = green - 3 < 0 ? 0 : green - 3;
+                    blue = blue - 3 < 0 ? 0 : blue - 3;
+                    Clr = Color.FromArgb( red, green, blue );
+                    phase--;
+                }
+            }
+
             if (world.PrettySpheres) //%%% zmenit
             {
                 float density = defaultWidth * densityPer100 / width;
@@ -69,6 +99,9 @@ namespace Physics
                 Vector shift = (sphere2.Location - sphere1.Location).Perpendicular();
                 shift = shift.Normalized();
                 shift = (width / 2) * shift;
+
+                if ((parallel1.End - parallel1.Start) * new Vector( 1, 0 ) < 0)
+                    shift = -1 * shift;
 
                 parallel1.Start = parallel1.Start + shift;
                 parallel1.End = parallel1.End + shift;
@@ -93,7 +126,6 @@ namespace Physics
                 }
                 g.DrawLine( p, drawLeft.x, drawLeft.y, drawRight.x, drawRight.y );
                 g.DrawLine( p, drawRight.x, drawRight.y, sphere2.Location.x, sphere2.Location.y );
-                // %%% dorobit peknu pruzinu, to bude tazsie
             }
             else
             {
