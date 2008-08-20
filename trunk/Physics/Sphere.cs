@@ -11,7 +11,7 @@ namespace Physics
         public Vector Location, Velocity;
         public float Radius, Mass, Elasticity, GravityStrength;
         public Color Clr;
-        public bool Stationary, DontMove;
+        public bool Stationary;
 
         public Sphere( World world )
         {
@@ -25,25 +25,20 @@ namespace Physics
             Clr = Color.Black;
             Stationary = false;
             GravityStrength = 0;
-
-            DontMove = false;
         }
 
         public override void Tick( float time )
         {
             if (!this.Stationary)
             {
-                DontMove = false;
-
                 Vector acceleration = world.Gravity;
 
                 acceleration -= (world.AirFriction * Velocity.Abs()) * Velocity;
                 Velocity += time * acceleration;
 
-                //Location += time * Velocity;
-                this.move( time ); //%%%
+                this.move( time );
 
-                this.resolveOverlapping();
+                this.resolveOverlapping(); //%%% preco toto robi?
 
                 this.keepInBounds( world.Bounds ); //%%% sem dorobit steny on/off
 
@@ -200,40 +195,59 @@ namespace Physics
 
             Board b = closest.With;
 
-            if (closest.Type == 1)
+            if (Geometry.Overlap( this, b ) == null)
             {
-                Vector vx1 = Vector.Projection( this.Velocity, b.line.End - b.line.Start );
-                Vector vy1 = this.Velocity - vx1;
+                if (closest.Type == 1)
+                {
+                    Vector vx1 = Vector.Projection( this.Velocity, b.line.End - b.line.Start );
+                    Vector vy1 = this.Velocity - vx1;
 
-                Vector newVy1 = -this.Elasticity * vy1;
+                    Vector newVy1 = -this.Elasticity * vy1;
 
-                this.Velocity = newVy1 + vx1;
+                    this.Velocity = newVy1 + vx1;
+
+                    Vector correction = (b.line.End - b.line.Start).Perpendicular().Normalized();
+                    correction = 0.1f * correction;
+
+                    Vector temp1 = closest.Location + correction;
+                    Vector temp2 = closest.Location - correction;
+
+                    Vector newLocation;
+                    if ((b.line.Start - temp1).Abs() > (b.line.Start - temp2).Abs())
+                        newLocation = temp1;
+                    else
+                        newLocation = temp2;
+
+                    this.Location = newLocation;
+                }
+
+                if (closest.Type == 2)
+                {
+                    Vector p1 = b.line.Start;
+                    Vector p2 = b.line.End;
+                    Vector pointOfCollision;
+
+                    if ((closest.Location - p1).Abs() < (closest.Location - p2).Abs())
+                        pointOfCollision = p1;
+                    else
+                        pointOfCollision = p2;
+
+                    Vector temp = pointOfCollision - closest.Location;
+
+                    Vector vx1 = Vector.Projection( this.Velocity, temp );
+                    Vector vy1 = this.Velocity - vx1;
+
+                    Vector newVx1 = -this.Elasticity * vx1;
+
+                    this.Velocity = newVx1 + vy1;
+
+                    Vector correction = (closest.Location - pointOfCollision).Normalized();
+                    correction = 0.1f * correction;
+
+                    Vector newLocation = closest.Location + correction;
+                    this.Location = newLocation;
+                }
             }
-
-            if (closest.Type == 2)
-            {
-                Vector p1 = b.line.Start;
-                Vector p2 = b.line.End;
-                Vector pointOfCollision;
-
-                if ((closest.Location - p1).Abs() < (closest.Location - p2).Abs())
-                    pointOfCollision = p1;
-                else
-                    pointOfCollision = p2;
-
-                Vector temp = pointOfCollision - closest.Location;
-                //temp = temp.Perpendicular();
-
-                Vector vx1 = Vector.Projection( this.Velocity, temp );
-                Vector vy1 = this.Velocity - vx1;
-
-                Vector newVx1 = -this.Elasticity * vx1;
-
-                this.Velocity = newVx1 + vy1;
-            }
-
-            this.Location = closest.Location;
-            //DontMove = true;
         }
 
         public Rectangle GetRectangle()

@@ -5,15 +5,16 @@ namespace Physics
 {
     public class Spring : PhysicsObject
     {
-        private const float density = 0;
+        private const float densityPer100 = 9; // pocet "pruziniek" na 100px pri default width
+        private const int defaultWidth = 10;
 
         public Color Clr;
+        float width;
 
         Sphere sphere1, sphere2;
         float length;
         float k;
-        float width;
-        float lengthN;
+
         //float damping; %%%
 
         public Spring( World world, Sphere sphere1, Sphere sphere2, float k, float length )
@@ -25,8 +26,7 @@ namespace Physics
             this.length = length;
             Clr = Color.Black;
 
-            width = 30;
-            lengthN = 30;
+            width = defaultWidth;
             //damping = 0.1f; %%%
         }
 
@@ -57,15 +57,48 @@ namespace Physics
             Graphics g = world.Graph;
             Pen p = new Pen( this.Clr );
 
-            //int number = Convert.ToInt32(length / lengthN);
+            if (world.PrettySpheres) //%%% zmenit
+            {
+                float density = defaultWidth * densityPer100 / width;
 
-            //for (int i = 0; i < number)
-            //{
+                int number = Convert.ToInt32( density * length / 100 );
 
-            //}
-            //// %%% dorobit peknu pruzinu, to bude tazsie
+                Line parallel1 = new Line( sphere1.Location, sphere2.Location );
+                Line parallel2 = new Line( parallel1 );
 
-            g.DrawLine( p, sphere1.Location.x, sphere1.Location.y, sphere2.Location.x, sphere2.Location.y );
+                Vector shift = (sphere2.Location - sphere1.Location).Perpendicular();
+                shift = shift.Normalized();
+                shift = (width / 2) * shift;
+
+                parallel1.Start = parallel1.Start + shift;
+                parallel1.End = parallel1.End + shift;
+
+                parallel2.Start = parallel2.Start - shift;
+                parallel2.End = parallel2.End - shift;
+
+                shift = sphere2.Location - sphere1.Location;
+                shift = (1.0f / number) * shift;
+
+                Vector drawLeft = parallel1.Start + (0.25f * shift);
+                Vector drawRight = parallel2.Start + (0.75f * shift);
+
+                g.DrawLine( p, sphere1.Location.x, sphere1.Location.y, drawLeft.x, drawLeft.y );
+
+                for (int i = 0; i < number - 1; i++)
+                {
+                    g.DrawLine( p, drawLeft.x, drawLeft.y, drawRight.x, drawRight.y );
+                    drawLeft += shift;
+                    g.DrawLine( p, drawRight.x, drawRight.y, drawLeft.x, drawLeft.y );
+                    drawRight += shift;
+                }
+                g.DrawLine( p, drawLeft.x, drawLeft.y, drawRight.x, drawRight.y );
+                g.DrawLine( p, drawRight.x, drawRight.y, sphere2.Location.x, sphere2.Location.y );
+                // %%% dorobit peknu pruzinu, to bude tazsie
+            }
+            else
+            {
+                g.DrawLine( p, sphere1.Location.x, sphere1.Location.y, sphere2.Location.x, sphere2.Location.y );
+            }
         }
     }
 }
