@@ -52,7 +52,7 @@ namespace Physics
             return false;
         }
 
-        private static bool Intersects( Sphere sphere, Line line )
+        public static bool Intersects( Sphere sphere, Line line )
         {
             float a, b, c;
 
@@ -333,30 +333,37 @@ namespace Physics
         {
             if (Intersects( sphere, board.line ))
             {
-                Line parallel1 = new Line( board.line );
-                Line parallel2 = new Line( board.line );
+                List<Vector> intersectionList = Intersection( sphere, board.line );
+                if (intersectionList.Count == 2)
+                {
+                    Line parallel1 = new Line( board.line );
+                    Line parallel2 = new Line( board.line );
 
-                Vector shift = (board.line.End - board.line.Start).Perpendicular();
-                shift = shift.Normalized();
-                shift = sphere.Radius * shift;
+                    Vector shift = (board.line.End - board.line.Start).Perpendicular();
+                    shift = shift.Normalized();
+                    Vector correction = new Vector( shift );
+                    correction = 0.1f * correction;
+                    shift = sphere.Radius * shift;
+                    shift += correction;
 
-                parallel1.Start = parallel1.Start + shift;
-                parallel1.End = parallel1.End + shift;
+                    parallel1.Start = parallel1.Start + shift;
+                    parallel1.End = parallel1.End + shift;
 
-                parallel2.Start = parallel2.Start - shift;
-                parallel2.End = parallel2.End - shift;
+                    parallel2.Start = parallel2.Start - shift;
+                    parallel2.End = parallel2.End - shift;
 
-                Vector tempV = board.line.End - board.line.Start;
-                tempV = tempV.Perpendicular();
-                Line tempLine = new Line( sphere.Location, sphere.Location + tempV );
+                    Vector tempV = board.line.End - board.line.Start;
+                    tempV = tempV.Perpendicular();
+                    Line tempLine = new Line( sphere.Location, sphere.Location + tempV );
 
-                Vector intersection1 = lineIntersection( tempLine, parallel1 );
-                Vector intersection2 = lineIntersection( tempLine, parallel2 );
+                    Vector intersection1 = lineIntersection( tempLine, parallel1 );
+                    Vector intersection2 = lineIntersection( tempLine, parallel2 );
 
-                if ((intersection1 - sphere.Location).Abs() < (intersection2 - sphere.Location).Abs())
-                    return intersection1;
-                else
-                    return intersection2;
+                    if ((intersection1 - sphere.Location).Abs() < (intersection2 - sphere.Location).Abs())
+                        return intersection1;
+                    else
+                        return intersection2;
+                }
             }
             return null;
         }
