@@ -63,7 +63,7 @@ namespace Physics
 
             float disc = b * b - 4 * a * c;
 
-            if (disc < 0)
+            if (disc <= 0)
                 return false;
 
             float u = (float)((-b + Math.Sqrt( disc )) / (2 * a));
@@ -204,7 +204,7 @@ namespace Physics
 
             float disc = b * b - 4 * a * c;
 
-            if (disc < 0)
+            if (disc <= 0)
                 return result;
 
             float u = (float)((-b + Math.Sqrt( disc )) / (2 * a));
@@ -276,7 +276,7 @@ namespace Physics
                 Line parallel1 = new Line( board.line );
                 Line parallel2 = new Line( board.line );
 
-                Vector shift = (parallel1.End - parallel1.Start).Perpendicular();
+                Vector shift = (board.line.End - board.line.Start).Perpendicular();
                 shift = shift.Normalized();
                 shift = sphere.Radius * shift;
 
@@ -325,6 +325,38 @@ namespace Physics
 
                     return result;
                 }
+            }
+            return null;
+        }
+
+        public static Vector Overlap( Sphere sphere, Board board )
+        {
+            if (Intersects( sphere, board.line ))
+            {
+                Line parallel1 = new Line( board.line );
+                Line parallel2 = new Line( board.line );
+
+                Vector shift = (board.line.End - board.line.Start).Perpendicular();
+                shift = shift.Normalized();
+                shift = sphere.Radius * shift;
+
+                parallel1.Start = parallel1.Start + shift;
+                parallel1.End = parallel1.End + shift;
+
+                parallel2.Start = parallel2.Start - shift;
+                parallel2.End = parallel2.End - shift;
+
+                Vector tempV = board.line.End - board.line.Start;
+                tempV = tempV.Perpendicular();
+                Line tempLine = new Line( sphere.Location, sphere.Location + tempV );
+
+                Vector intersection1 = lineIntersection( tempLine, parallel1 );
+                Vector intersection2 = lineIntersection( tempLine, parallel2 );
+
+                if ((intersection1 - sphere.Location).Abs() < (intersection2 - sphere.Location).Abs())
+                    return intersection1;
+                else
+                    return intersection2;
             }
             return null;
         }

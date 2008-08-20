@@ -150,6 +150,7 @@ namespace PhySandbox
             //    }
             //}
 
+            world.AddBoard( 200, 300, 400, 300 );
             //world.AddBoard( 100, 100, panel1.Width / 2, panel1.Height / 2 );
             //world.AddBoard( panel1.Width / 2, panel1.Height / 2, panel1.Width - 100, 100 );
 

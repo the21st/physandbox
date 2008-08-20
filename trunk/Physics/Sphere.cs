@@ -11,7 +11,7 @@ namespace Physics
         public Vector Location, Velocity;
         public float Radius, Mass, Elasticity, GravityStrength;
         public Color Clr;
-        public bool Stationary;
+        public bool Stationary, DontMove;
 
         public Sphere( World world )
         {
@@ -25,12 +25,16 @@ namespace Physics
             Clr = Color.Black;
             Stationary = false;
             GravityStrength = 0;
+
+            DontMove = false;
         }
 
         public override void Tick( float time )
         {
             if (!this.Stationary)
             {
+                DontMove = false;
+
                 Vector acceleration = world.Gravity;
 
                 acceleration -= (world.AirFriction * Velocity.Abs()) * Velocity;
@@ -38,6 +42,8 @@ namespace Physics
 
                 //Location += time * Velocity;
                 this.move( time ); //%%%
+
+                this.resolveOverlapping();
 
                 this.keepInBounds( world.Bounds ); //%%% sem dorobit steny on/off
 
@@ -105,7 +111,7 @@ namespace Physics
             }
         }
 
-        private bool keepInBounds( Rectangle bounds )
+        private void keepInBounds( Rectangle bounds )
         {
             // odrazanie od stien so zakonom zachovania energie (kin+pot) %%%
 
@@ -142,8 +148,18 @@ namespace Physics
                     Velocity.x = -Velocity.x * Elasticity;
                 Location.x = bounds.Right - Radius;
             }
+        }
 
-            return false;
+        private void resolveOverlapping()
+        {
+            List<Board> boards = world.boards;
+
+            foreach (Board board in boards)
+            {
+                Vector v = Geometry.Overlap( this, board );
+                if (v != null)
+                    this.Location = v;
+            }
         }
 
         private void move( float time )
@@ -217,6 +233,7 @@ namespace Physics
             }
 
             this.Location = closest.Location;
+            //DontMove = true;
         }
 
         public Rectangle GetRectangle()

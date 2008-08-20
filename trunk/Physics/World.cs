@@ -57,7 +57,6 @@ namespace Physics
                 spring.Tick( time );
             }
 
-
             foreach (Sphere sphere in spheres)
             {
                 sphere.Tick( time );
@@ -226,22 +225,25 @@ namespace Physics
                     }
                 }
 
-                // ---------moveutie guli von zo seba------------
-                float move = (sphere1.Radius + sphere2.Radius) - deltaLocation.Abs();
+                if (!(sphere1.DontMove && sphere2.DontMove))
+                {
+                    // ---------movenutie guli von zo seba------------
+                    float move = (sphere1.Radius + sphere2.Radius) - deltaLocation.Abs();
 
-                if (sphere1.Stationary)
-                {
-                    Vector move1 = move * deltaLocationNormalized;
-                    sphere2.Location += move1;
-                }
-                else
-                {
-                    float p1 = (m2 / (m1 + m2)) * move;
-                    float p2 = move - p1;
-                    Vector move1 = -p1 * deltaLocationNormalized;
-                    Vector move2 = p2 * deltaLocationNormalized;
-                    sphere1.Location += move1;
-                    sphere2.Location += move2;
+                    if (sphere1.Stationary || sphere1.DontMove)
+                    {
+                        Vector move1 = move * deltaLocationNormalized;
+                        sphere2.Location += move1;
+                    }
+                    else
+                    {
+                        float p1 = (m2 / (m1 + m2)) * move;
+                        float p2 = move - p1;
+                        Vector move1 = -p1 * deltaLocationNormalized;
+                        Vector move2 = p2 * deltaLocationNormalized;
+                        sphere1.Location += move1;
+                        sphere2.Location += move2;
+                    }
                 }
                 return true;
             }
