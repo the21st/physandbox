@@ -10,7 +10,6 @@ namespace Physics
 
         public Vector Location, Velocity;
         public float Radius, Mass, Elasticity, GravityStrength;
-        public Color Clr;
         public bool Stationary;
 
         public Sphere( World world )
@@ -48,6 +47,35 @@ namespace Physics
 
         public override void Render()
         {
+            if (selected)
+            {
+                if (phase >= maxChange)
+                    brighter = false;
+                if (phase <= -maxChange)
+                    brighter = true;
+
+                int red = Clr.R;
+                int green = Clr.G;
+                int blue = Clr.B;
+
+                if (brighter)
+                {
+                    red = red + 3 > 255 ? 255 : red + 3;
+                    green = green + 3 > 255 ? 255 : green + 3;
+                    blue = blue + 3 > 255 ? 255 : blue + 3;
+                    Clr = Color.FromArgb( red, green, blue );
+                    phase++;
+                }
+                else
+                {
+                    red = red - 3 < 0 ? 0 : red - 3;
+                    green = green - 3 < 0 ? 0 : green - 3;
+                    blue = blue - 3 < 0 ? 0 : blue - 3;
+                    Clr = Color.FromArgb( red, green, blue );
+                    phase--;
+                }
+            }
+
             Graphics g = world.Graph;
             if (world.PrettySpheres)
             {
@@ -164,7 +192,7 @@ namespace Physics
 
             foreach (Board board in boards)
             {
-                CollisionInfo collision = Geometry.Collision(this, board, time);
+                CollisionInfo collision = Geometry.Collision( this, board, time );
                 if (collision != null)
                     collisions.Add( collision );
             }

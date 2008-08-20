@@ -8,7 +8,8 @@ namespace Physics
     {
         public List<Sphere> spheres;
         public List<Board> boards;
-        private List<Spring> springs;
+        public List<Spring> springs;
+        private PhysicsObject selected;
 
         public Rectangle Bounds;
         public Vector Gravity;
@@ -41,17 +42,6 @@ namespace Physics
 
         public void Tick( float time )
         {
-            if (Collisions)
-            {
-                for (int i = 0; i < spheres.Count - 1; ++i)
-                {
-                    for (int j = i + 1; j < spheres.Count; ++j)
-                    {
-                        spheresCollision( spheres[ i ], spheres[ j ] );
-                    }
-                }
-            }
-
             foreach (Spring spring in springs)
             {
                 spring.Tick( time );
@@ -62,6 +52,16 @@ namespace Physics
                 sphere.Tick( time );
             }
 
+            if (Collisions)
+            {
+                for (int i = 0; i < spheres.Count - 1; ++i)
+                {
+                    for (int j = i + 1; j < spheres.Count; ++j)
+                    {
+                        spheresCollision( spheres[ i ], spheres[ j ] );
+                    }
+                }
+            }
             //foreach (Sphere sphere1 in spheres)
             //{
             //    foreach (Sphere sphere2 in spheres)
@@ -144,11 +144,23 @@ namespace Physics
             spheres.Add( sphere );
         }
 
+        public void AddSpring( Spring spring )
+        {
+            spring.Render();
+            springs.Add( spring );
+        }
+
         public void AddSpring( Sphere sphere1, Sphere sphere2, float k, float length )
         {
             Spring spring = new Spring( this, sphere1, sphere2, k, length );
 
             springs.Add( spring );
+        }
+
+        public void AddBoard( Board board )
+        {
+            board.Render();
+            boards.Add( board );
         }
 
         public void AddBoard( float x1, float y1, float x2, float y2 )
