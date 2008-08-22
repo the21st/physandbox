@@ -46,12 +46,9 @@
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.textBoxGravity = new System.Windows.Forms.TextBox();
-            this.buttonGravity = new System.Windows.Forms.Button();
-            this.buttonFriction = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
             this.timer2 = new System.Windows.Forms.Timer( this.components );
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -143,7 +140,7 @@
             this.helpToolStripMenuItem} );
             this.menuStrip1.Location = new System.Drawing.Point( 0, 0 );
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size( 686, 24 );
+            this.menuStrip1.Size = new System.Drawing.Size( 599, 24 );
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -151,6 +148,8 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] {
             this.newToolStripMenuItem,
+            this.saveToolStripMenuItem,
+            this.loadToolStripMenuItem,
             this.exitToolStripMenuItem} );
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size( 37, 20 );
@@ -159,13 +158,13 @@
             // newToolStripMenuItem
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size( 98, 22 );
+            this.newToolStripMenuItem.Size = new System.Drawing.Size( 152, 22 );
             this.newToolStripMenuItem.Text = "New";
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size( 98, 22 );
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size( 152, 22 );
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler( this.exitToolStripMenuItem_Click );
             // 
@@ -197,65 +196,31 @@
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size( 107, 22 );
             this.aboutToolStripMenuItem.Text = "About";
             // 
-            // textBoxGravity
-            // 
-            this.textBoxGravity.Location = new System.Drawing.Point( 521, 43 );
-            this.textBoxGravity.Name = "textBoxGravity";
-            this.textBoxGravity.Size = new System.Drawing.Size( 61, 20 );
-            this.textBoxGravity.TabIndex = 9;
-            this.textBoxGravity.Text = "0";
-            // 
-            // buttonGravity
-            // 
-            this.buttonGravity.Location = new System.Drawing.Point( 588, 41 );
-            this.buttonGravity.Name = "buttonGravity";
-            this.buttonGravity.Size = new System.Drawing.Size( 86, 23 );
-            this.buttonGravity.TabIndex = 10;
-            this.buttonGravity.Text = "Set Gravity";
-            this.buttonGravity.UseVisualStyleBackColor = true;
-            // 
-            // buttonFriction
-            // 
-            this.buttonFriction.Location = new System.Drawing.Point( 588, 70 );
-            this.buttonFriction.Name = "buttonFriction";
-            this.buttonFriction.Size = new System.Drawing.Size( 86, 23 );
-            this.buttonFriction.TabIndex = 12;
-            this.buttonFriction.Text = "Set Air Friction";
-            this.buttonFriction.UseVisualStyleBackColor = true;
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point( 521, 72 );
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size( 61, 20 );
-            this.textBox1.TabIndex = 11;
-            this.textBox1.Text = "0.001";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point( 518, 168 );
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size( 65, 13 );
-            this.label3.TabIndex = 13;
-            this.label3.Text = "Adding Balls";
-            // 
             // timer2
             // 
             this.timer2.Enabled = true;
             this.timer2.Interval = 1000;
             this.timer2.Tick += new System.EventHandler( this.timer2_Tick );
             // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size( 152, 22 );
+            this.saveToolStripMenuItem.Text = "Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler( this.saveToolStripMenuItem_Click );
+            // 
+            // loadToolStripMenuItem
+            // 
+            this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size( 152, 22 );
+            this.loadToolStripMenuItem.Text = "Load";
+            this.loadToolStripMenuItem.Click += new System.EventHandler( this.loadToolStripMenuItem_Click );
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 13F );
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size( 686, 575 );
-            this.Controls.Add( this.label3 );
-            this.Controls.Add( this.buttonFriction );
-            this.Controls.Add( this.textBox1 );
-            this.Controls.Add( this.buttonGravity );
-            this.Controls.Add( this.textBoxGravity );
+            this.ClientSize = new System.Drawing.Size( 599, 575 );
             this.Controls.Add( this.labelFps );
             this.Controls.Add( this.labelBalls );
             this.Controls.Add( this.labelLocation );
@@ -295,12 +260,9 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
-        private System.Windows.Forms.TextBox textBoxGravity;
-        private System.Windows.Forms.Button buttonGravity;
-        private System.Windows.Forms.Button buttonFriction;
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Timer timer2;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
     }
 }
 

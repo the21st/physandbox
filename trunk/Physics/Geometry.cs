@@ -120,80 +120,6 @@ namespace Physics
             return result;
         }
 
-        //private static Vector intersection( Line line1, Line line2 )
-        //{
-        //    //podla vzorca na vypocet priesecniku dvoch useciek:
-        //    float f = ((((line2.End.x - line2.Start.x) * (line1.Start.y - line2.Start.y)) - ((line2.End.y - line2.Start.y) * (line1.Start.x - line2.Start.x))) /
-        //               (((line2.End.y - line2.Start.y) * (line1.End.x - line1.Start.x)) - ((line2.End.x - line2.Start.x) * (line1.End.y - line1.Start.y))));
-        //    Vector result = new Vector( line1.Start.x + f * (line1.End.x - line1.Start.x), line1.Start.y + f * (line1.End.y - line1.Start.y) );
-
-        //    if (pointOnLine( result, line1 ) && pointOnLine( result, line2 ))
-        //        return result;
-        //    else
-        //        return null;
-        //}
-
-        //public static Vector Intersection( Line primary, Line secondary )
-        //{
-        //    if (areParallel( primary, secondary ))
-        //    {
-        //        // su rovnobezne
-        //        if (onOneLine( primary, secondary ))
-        //        {
-        //            // lezia na jednej priamke
-        //            // rozoberam vsetky mozne pripady:
-
-        //            if (pointOnLine( primary.Start, secondary ))
-        //            {
-        //                // prienik je hned v zaciatku primarnej usecky
-        //                return new Vector( primary.Start );
-        //            }
-
-        //            if (pointOnLine( secondary.Start, primary ) &&
-        //                pointOnLine( secondary.End, primary ))
-        //            {
-        //                if ((secondary.Start - primary.Start).Abs() < (secondary.End - primary.Start).Abs())
-        //                    return new Vector( secondary.Start );
-        //                else
-        //                    return new Vector( secondary.End );
-        //            }
-
-        //            if (pointOnLine( secondary.Start, primary ))
-        //            {
-        //                return new Vector( secondary.Start );
-        //            }
-
-        //            if (pointOnLine( secondary.End, primary ))
-        //            {
-        //                return new Vector( secondary.End );
-        //            }
-        //        }
-        //        else
-        //        {
-        //            // nelezia na jednej priamke, a teda nemaju priesecnik
-        //            return null;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        // su roznobezne
-        //        return intersection( primary, secondary );
-        //    }
-        //    return null;
-        //}
-
-        //private static int sgnA( float x )
-        //{
-        //    if (x < 0)
-        //        return -1;
-        //    return 1;
-        //}
-
-        //private static Vector midPoint( Vector v1, Vector v2 )
-        //{
-        //    return new Vector( (v1.x + v2.x) / 2, (v1.y + v2.y) / 2 );
-        //}
-
         public static List<Vector> Intersection( Sphere sphere, Line line )
         {
             float a, b, c;
@@ -369,5 +295,80 @@ namespace Physics
             }
             return null;
         }
+
+        //private static Vector intersection( Line line1, Line line2 )
+        //{
+        //    //podla vzorca na vypocet priesecniku dvoch useciek:
+        //    float f = ((((line2.End.x - line2.Start.x) * (line1.Start.y - line2.Start.y)) - ((line2.End.y - line2.Start.y) * (line1.Start.x - line2.Start.x))) /
+        //               (((line2.End.y - line2.Start.y) * (line1.End.x - line1.Start.x)) - ((line2.End.x - line2.Start.x) * (line1.End.y - line1.Start.y))));
+        //    Vector result = new Vector( line1.Start.x + f * (line1.End.x - line1.Start.x), line1.Start.y + f * (line1.End.y - line1.Start.y) );
+
+        //    if (pointOnLine( result, line1 ) && pointOnLine( result, line2 ))
+        //        return result;
+        //    else
+        //        return null;
+        //}
+
+        //public static Vector Intersection( Line primary, Line secondary )
+        //{
+        //    if (areParallel( primary, secondary ))
+        //    {
+        //        // su rovnobezne
+        //        if (onOneLine( primary, secondary ))
+        //        {
+        //            // lezia na jednej priamke
+        //            // rozoberam vsetky mozne pripady:
+
+        //            if (pointOnLine( primary.Start, secondary ))
+        //            {
+        //                // prienik je hned v zaciatku primarnej usecky
+        //                return new Vector( primary.Start );
+        //            }
+
+        //            if (pointOnLine( secondary.Start, primary ) &&
+        //                pointOnLine( secondary.End, primary ))
+        //            {
+        //                if ((secondary.Start - primary.Start).Abs() < (secondary.End - primary.Start).Abs())
+        //                    return new Vector( secondary.Start );
+        //                else
+        //                    return new Vector( secondary.End );
+        //            }
+
+        //            if (pointOnLine( secondary.Start, primary ))
+        //            {
+        //                return new Vector( secondary.Start );
+        //            }
+
+        //            if (pointOnLine( secondary.End, primary ))
+        //            {
+        //                return new Vector( secondary.End );
+        //            }
+        //        }
+        //        else
+        //        {
+        //            // nelezia na jednej priamke, a teda nemaju priesecnik
+        //            return null;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        // su roznobezne
+        //        return intersection( primary, secondary );
+        //    }
+        //    return null;
+        //}
+
+        //private static int sgnA( float x )
+        //{
+        //    if (x < 0)
+        //        return -1;
+        //    return 1;
+        //}
+
+        //private static Vector midPoint( Vector v1, Vector v2 )
+        //{
+        //    return new Vector( (v1.x + v2.x) / 2, (v1.y + v2.y) / 2 );
+        //}
+
     }
 }
