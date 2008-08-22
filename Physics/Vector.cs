@@ -105,7 +105,6 @@ namespace Physics
         public override string ToString()
         {
             return this.x + ", " + this.y;
-            //return "(" + this.x + ", " + this.y + ")";
         }
     }
 }

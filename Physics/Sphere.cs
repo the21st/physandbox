@@ -14,7 +14,11 @@ namespace Physics
 
         public Sphere( World world )
         {
-            this.world = world;
+            if (world != null)
+            {
+                this.world = world;
+                ID = ++world.MaxID;
+            }
 
             Location = new Vector();
             Velocity = new Vector();
@@ -107,6 +111,40 @@ namespace Physics
                 g.DrawEllipse( p, this.GetRectangle() );
                 p.Dispose();
             }
+        }
+
+        public override string ToString()
+        {
+            string write = "SPH " +
+                           Location.x.ToString() + " " + Location.y.ToString() + " " +
+                           Velocity.x.ToString() + " " + Velocity.y.ToString() + " " +
+                           Radius.ToString() + " " + Mass.ToString() + " " +
+                           Elasticity.ToString() + " " + GravityStrength.ToString() + " " +
+                           Stationary.ToString() + " " +
+                           Clr.R.ToString() + " " + Clr.G.ToString() + " " + Clr.B.ToString() + " " +
+                           ID.ToString();
+            write = write.Replace( ',', '.' );
+            return write;
+        }
+
+        public void FromFile( string info )
+        {
+            if (System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator == ",")
+                info = info.Replace( ".", "," );
+
+            string[] s = info.Split( ' ' );
+
+            Location.x = float.Parse( s[ 1 ] );
+            Location.y = float.Parse( s[ 2 ] );
+            Velocity.x = float.Parse( s[ 3 ] );
+            Velocity.y = float.Parse( s[ 4 ] );
+            Radius = float.Parse( s[ 5 ] );
+            Mass = float.Parse( s[ 6 ] );
+            Elasticity = float.Parse( s[ 7 ] );
+            GravityStrength = float.Parse( s[ 8 ] );
+            Stationary = bool.Parse( s[ 9 ] );
+            Clr = Color.FromArgb( int.Parse( s[ 10 ] ), int.Parse( s[ 11 ] ), int.Parse( s[ 12 ] ) );
+            ID = long.Parse( s[ 13 ] );
         }
 
         private void applyGravity( float time )

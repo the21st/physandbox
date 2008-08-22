@@ -6,6 +6,7 @@ namespace Physics
     public abstract class PhysicsObject
     {
         protected World world;
+        public long ID;
 
 
         protected const int maxChange = 15;
@@ -15,6 +16,7 @@ namespace Physics
         protected bool selected = false;
         protected bool brighter = true;
         protected int phase = 0;
+
 
         public abstract void Tick( float time );
 
