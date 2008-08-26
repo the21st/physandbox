@@ -36,11 +36,10 @@ namespace PhySandbox
 
             world = new World( buffer, new Rectangle( 0, 0, panel1.Width, panel1.Height - 1 ) );
             world.Gravity.x = 0;
-            world.Gravity.y = 1;
+            world.Gravity.y = 0;
             world.AirFriction = 0.001f;
 
-            world.Collisions = true;
-            world.PrettySpheres = true;
+            //world.Collisions = true;
 
             frames = 0;
             start = DateTime.Now.ToFileTime();
@@ -153,64 +152,68 @@ namespace PhySandbox
             //world.AddBoard( 100, 100, panel1.Width / 2, panel1.Height / 2 );
             //world.AddBoard( panel1.Width / 2, panel1.Height / 2, panel1.Width - 100, 100 );
 
-            world.AddBoard( 100, 100, 150, 300 );
-            world.AddBoard( 150, 300, 400, 300 );
-            world.AddBoard( 400, 300, 450, 100 );
+            //world.AddBoard( 100, 100, 150, 300 );
+            //world.AddBoard( 150, 300, 400, 300 );
+            //world.AddBoard( 400, 300, 450, 100 );
 
             //world.AddBoard( 100, 100, 300, 200 );
             //world.AddBoard( panel1.Width, 300, panel1.Width / 2, 400 );
 
-            //Board board = new Board( world );
-            //board.line.Start.x = 100;
-            //board.line.Start.y = 100;
-            //board.line.End.x = 200;
-            //board.line.End.y = 100;
-            //board.Clr = Color.Brown;
+            Board board = new Board( world );
+            board.line.Start.x = 100;
+            board.line.Start.y = 100;
+            board.line.End.x = 200;
+            board.line.End.y = 100;
+            board.Clr = Color.Brown;
 
-            //world.AddBoard( board );
+            world.AddBoard( board );
 
-            //Sphere s1 = new Sphere( world );
-            //s1.Location.x = 300;
-            //s1.Location.y = 300;
-            //s1.Velocity.y = -20;
-            //s1.Clr = Color.Yellow;
-            //world.AddSphere( s1 );
+            Sphere s1 = new Sphere( world );
+            s1.Location.x = 300;
+            s1.Location.y = 300;
+            s1.Velocity.x = -20;
+            s1.Velocity.y = -20;
+            s1.Clr = Color.Orange;
+            world.AddSphere( s1 );
 
-            //Sphere s2 = new Sphere( world );
-            //s2.Location.x = 400;
-            //s2.Location.y = 300;
-            //world.AddSphere( s2 );
+            Sphere s2 = new Sphere( world );
+            s2.Location.x = 400;
+            s2.Location.y = 300;
+            world.AddSphere( s2 );
 
-            //Spring spring = new Spring( world );
-            //spring.Sphere1 = s1;
-            //spring.Sphere2 = s2;
-            //spring.k = 0.1f;
-            //spring.Length = 100;
+            Spring spring = new Spring( world );
+            spring.Sphere1 = s1;
+            spring.Sphere2 = s2;
+            spring.k = 0.1f;
+            spring.Length = 100;
 
-            //world.AddSpring( spring );
+            world.AddSpring( spring );
+
+            world.hqSpheres = true;
+            world.hqSprings = true;
 
             labelBalls.Text = world.SpheresCount().ToString();
         }
 
         private void panel1_MouseUp( object sender, MouseEventArgs e )
         {
-            if (e.Button == MouseButtons.Left)
-                world.AddSphere( e.X, e.Y, 0, 0, 25, 100, 0.9f, 0, Color.Blue, false );
+            //if (e.Button == MouseButtons.Left)
+            //    world.AddSphere( e.X, e.Y, 0, 0, 25, 100, 0.1f, 1f, Color.Blue, false );
 
-            if (e.Button == MouseButtons.Middle)
-                world.AddSphere( e.X, e.Y, 0, 0, 30, 70, 0.5f, 1f, Color.Brown, true );
+            //if (e.Button == MouseButtons.Middle)
+            //    world.AddSphere( e.X, e.Y, 0, 0, 30, 70, 0.5f, 1f, Color.Brown, true );
 
-            if (e.Button == MouseButtons.Right)
-                //world.SelectObject( e.X, e.Y );
-                world.AddSphere( e.X, e.Y, 0, 0, 20, 50, 0.5f, -10f, Color.Green, false );
+            //if (e.Button == MouseButtons.Right)
+            //    //world.SelectObject( e.X, e.Y );
+            //    world.AddSphere( e.X, e.Y, 0, 0, 20, 50, 0.5f, -10f, Color.Green, false );
 
             labelBalls.Text = world.SpheresCount().ToString();
         }
 
         private void timer1_Tick( object sender, EventArgs e )
         {
-            float speed = 0.3f;
-            world.Tick( speed );
+            float speed = 1;
+            world.Tick( 0.3f * speed );
 
             world.Render(); // naplnanie bufferu
             //this.Render();
@@ -273,7 +276,7 @@ namespace PhySandbox
                 Color c = Color.FromArgb( r.Next( 256 ), r.Next( 256 ), r.Next( 256 ) );
 
                 //%%% aby to generovalo navolene
-                world.AddSphere( x, y, 0, 0, 3, 10, 0.95f, 0, c, false );
+                //world.AddSphere( x, y, 0, 0, 3, 10, 0.95f, 0, c, false );
             }
 
             labelBalls.Text = world.SpheresCount().ToString();
@@ -301,6 +304,11 @@ namespace PhySandbox
         private void loadToolStripMenuItem_Click( object sender, EventArgs e )
         {
             world.LoadScene( "save1.phys" );
+        }
+
+        private void button1_Click( object sender, EventArgs e )
+        {
+            timer1.Enabled = !timer1.Enabled;
         }
     }
 }
