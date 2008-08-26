@@ -97,7 +97,7 @@ namespace Physics
                 p.Width = 2;
             }
 
-            if (world.hqSpheres)
+            if (world.hqSprings)
             {
                 float density = defaultWidth * densityPer100 / Width;
 
