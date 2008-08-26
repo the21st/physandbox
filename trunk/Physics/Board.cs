@@ -24,12 +24,11 @@ namespace Physics
         public override void Render()
         {
             Graphics g = world.Graph;
-            Pen p = new Pen( Clr );
+            Color selectedClr = Clr;
+            Pen p = new Pen( Clr, 2 );
 
             if (selected)
             {
-                p.Width = 2;
-
                 if (phase >= maxChange)
                     brighter = false;
                 if (phase <= -maxChange)
@@ -39,25 +38,39 @@ namespace Physics
                 int green = Clr.G;
                 int blue = Clr.B;
 
-                if (brighter)
-                {
-                    red = red + 3 > 255 ? 255 : red + 3;
-                    green = green + 3 > 255 ? 255 : green + 3;
-                    blue = blue + 3 > 255 ? 255 : blue + 3;
-                    Clr = Color.FromArgb( red, green, blue );
-                    phase++;
-                }
+                if (red + 3 * phase > 255)
+                    red = 255;
                 else
-                {
-                    red = red - 3 < 0 ? 0 : red - 3;
-                    green = green - 3 < 0 ? 0 : green - 3;
-                    blue = blue - 3 < 0 ? 0 : blue - 3;
-                    Clr = Color.FromArgb( red, green, blue );
-                    phase--;
-                }
-            }
+                    if (red + 3 * phase < 0)
+                        red = 0;
+                    else
+                        red = red + 3 * phase;
 
-            //p.Width = 1; //%%%
+                if (green + 3 * phase > 255)
+                    green = 255;
+                else
+                    if (green + 3 * phase < 0)
+                        green = 0;
+                    else
+                        green = green + 3 * phase;
+
+                if (blue + 3 * phase > 255)
+                    blue = 255;
+                else
+                    if (blue + 3 * phase < 0)
+                        blue = 0;
+                    else
+                        blue = blue + 3 * phase;
+
+                if (brighter)
+                    phase++;
+                else
+                    phase--;
+
+                selectedClr = Color.FromArgb( red, green, blue );
+                p.Color = selectedClr;
+                p.Width = 3;
+            }
 
             g.DrawLine( p, line.Start.x, line.Start.y, line.End.x, line.End.y );
 

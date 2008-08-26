@@ -6,27 +6,23 @@ namespace Physics
 {
     public class World
     {
+        public Graphics Graph;
         public long MaxID;
 
         public List<Sphere> spheres;
         public List<Board> boards;
         public List<Spring> springs;
-        private PhysicsObject selected;
+        public PhysicsObject Selected;
 
         public Rectangle Bounds;
         public Vector Gravity;
         public float AirFriction;
-        public bool Collisions;
+        public bool Collisions, Walls;
 
-
-        public Graphics Graph;
-
-        // misc (appearance, performance) 
-        // %%% nieco lepsie vymysliet
-        public bool PrettySpheres;
-
+        public bool hqSpheres, hqSprings;
 
         public const float G = 10000;
+
 
         public World( Graphics graphics, Rectangle bounds )
         {
@@ -34,15 +30,18 @@ namespace Physics
             this.Bounds = bounds;
 
             MaxID = 0;
-            Gravity = new Vector();
-            AirFriction = 0f;
+            Gravity = new Vector( 0, 1 );
+            AirFriction = 0.001f;
             Collisions = true;
-            //objects = new List<PhysicsObject>();
             spheres = new List<Sphere>();
             springs = new List<Spring>();
             boards = new List<Board>();
 
-            PrettySpheres = true; //%%%
+            Collisions = true;
+            Walls = true;
+
+            hqSpheres = true;
+            hqSprings = true;
         }
 
         public void Tick( float time )
@@ -71,7 +70,6 @@ namespace Physics
             //{
             //    foreach (Sphere sphere2 in spheres)
             //    {
-            //        //%%% NIE VSETKY DVOJICE
             //        resolveCollision( sphere1, sphere2 );
             //    }
             //}
@@ -102,7 +100,8 @@ namespace Physics
             string write = "ENV " +
                            Gravity.x.ToString() + " " + Gravity.y.ToString() + " " +
                            AirFriction.ToString() + " " +
-                           Collisions.ToString() + " " + 
+                           Collisions.ToString() + " " +
+                           Walls.ToString() + " " +
                            MaxID.ToString();
             write = write.Replace( ',', '.' );
             return write;
@@ -119,15 +118,12 @@ namespace Physics
             Gravity.y = float.Parse( s[ 2 ] );
             AirFriction = float.Parse( s[ 3 ] );
             Collisions = bool.Parse( s[ 4 ] );
-            MaxID = long.Parse( s[ 5 ] );
+            Walls = bool.Parse( s[ 5 ] );
+            MaxID = long.Parse( s[ 6 ] );
         }
 
         private static bool spheresCollision( Sphere sphere1, Sphere sphere2 )
         {
-            //%%% STATIC
-            //if (sphere1 == sphere2)
-            //    return false;
-
             if (sphere1.Stationary && sphere2.Stationary)
                 return false;
 
@@ -209,74 +205,71 @@ namespace Physics
 
         public void AddSphere( Sphere sphere )
         {
-            sphere.Render();
             spheres.Add( sphere );
         }
 
-        public void AddSphere( float x, float y, float vx, float vy, int radius, float mass, float elasticity, float gravityStrength, Color color, bool stationary )
-        {
-            Sphere sphere = new Sphere( this );
-            sphere.Location.x = x;
-            sphere.Location.y = y;
-            sphere.Velocity.x = vx;
-            sphere.Velocity.y = vy;
-            //Random r = new Random();
-            //sphere.Color = Color.FromArgb( r.Next( 256 ), r.Next( 256 ), r.Next( 256 ) );
-            sphere.Mass = mass;
-            sphere.Elasticity = elasticity;
-            sphere.Radius = radius;
-            sphere.GravityStrength = gravityStrength;
-            sphere.Clr = color;
-            sphere.Stationary = stationary;
+        //public void AddSphere( float x, float y, float vx, float vy, int radius, float mass, float elasticity, float gravityStrength, Color color, bool stationary )
+        //{
+        //    Sphere sphere = new Sphere( this );
+        //    sphere.Location.x = x;
+        //    sphere.Location.y = y;
+        //    sphere.Velocity.x = vx;
+        //    sphere.Velocity.y = vy;
+        //    //Random r = new Random();
+        //    //sphere.Color = Color.FromArgb( r.Next( 256 ), r.Next( 256 ), r.Next( 256 ) );
+        //    sphere.Mass = mass;
+        //    sphere.Elasticity = elasticity;
+        //    sphere.Radius = radius;
+        //    sphere.GravityStrength = gravityStrength;
+        //    sphere.Clr = color;
+        //    sphere.Stationary = stationary;
 
-            sphere.Render();
-            spheres.Add( sphere );
-        }
+        //    sphere.Render();
+        //    spheres.Add( sphere );
+        //}
 
         public void AddSpring( Spring spring )
         {
-            spring.Render();
             springs.Add( spring );
         }
 
-        public void AddSpring( Sphere sphere1, Sphere sphere2, float k, float length )
-        {
-            Spring spring = new Spring( this );
+        //public void AddSpring( Sphere sphere1, Sphere sphere2, float k, float length )
+        //{
+        //    Spring spring = new Spring( this );
 
-            spring.Sphere1 = sphere1;
-            spring.Sphere2 = sphere2;
-            spring.k = k;
-            spring.Length = length;
+        //    spring.Sphere1 = sphere1;
+        //    spring.Sphere2 = sphere2;
+        //    spring.k = k;
+        //    spring.Length = length;
 
-            springs.Add( spring );
-        }
+        //    springs.Add( spring );
+        //}
 
         public void AddBoard( Board board )
         {
-            board.Render();
             boards.Add( board );
         }
 
-        public void AddBoard( float x1, float y1, float x2, float y2 )
-        {
-            Board board = new Board( this );
-            board.line.Start.x = x1;
-            board.line.Start.y = y1;
-            board.line.End.x = x2;
-            board.line.End.y = y2;
+        //public void AddBoard( float x1, float y1, float x2, float y2 )
+        //{
+        //    Board board = new Board( this );
+        //    board.line.Start.x = x1;
+        //    board.line.Start.y = y1;
+        //    board.line.End.x = x2;
+        //    board.line.End.y = y2;
 
-            board.Render();
-            boards.Add( board );
-        }
+        //    board.Render();
+        //    boards.Add( board );
+        //}
 
-        public void ChangeLocationOfSpheres( int dx, int dy )
-        {
-            foreach (Sphere sphere in spheres)
-            {
-                sphere.Location.x += dx;
-                sphere.Location.y += dy;
-            }
-        }
+        //public void ChangeLocationOfSpheres( int dx, int dy )
+        //{
+        //    foreach (Sphere sphere in spheres)
+        //    {
+        //        sphere.Location.x += dx;
+        //        sphere.Location.y += dy;
+        //    }
+        //}
 
         public PhysicsObject SelectObject( float x, float y )
         {
@@ -284,9 +277,9 @@ namespace Physics
             {
                 if (sphere.IsAtLocation( x, y ))
                 {
-                    if (selected != null)
-                        selected.Deselect();
-                    selected = sphere;
+                    if (Selected != null)
+                        Selected.Deselect();
+                    Selected = sphere;
                     sphere.Select();
                     return sphere;
                 }
@@ -296,9 +289,9 @@ namespace Physics
             {
                 if (board.IsAtLocation( x, y ))
                 {
-                    if (selected != null)
-                        selected.Deselect();
-                    selected = board;
+                    if (Selected != null)
+                        Selected.Deselect();
+                    Selected = board;
                     board.Select();
                     return board;
                 }
@@ -308,66 +301,93 @@ namespace Physics
             {
                 if (spring.IsAtLocation( x, y ))
                 {
-                    if (selected != null)
-                        selected.Deselect();
-                    selected = spring;
+                    if (Selected != null)
+                        Selected.Deselect();
+                    Selected = spring;
                     spring.Select();
                     return spring;
                 }
             }
 
-            if (selected != null)
+            if (Selected != null)
             {
-                selected.Deselect();
-                selected = null;
+                Selected.Deselect();
+                Selected = null;
             }
             return null;
         }
 
+        public Sphere SelectSphere( float x, float y )
+        {
+            foreach (Sphere sphere in spheres)
+            {
+                if (sphere.IsAtLocation( x, y ))
+                {
+                    if (Selected != null)
+                        Selected.Deselect();
+                    Selected = sphere;
+                    sphere.Select();
+                    return sphere;
+                }
+            }
+
+            return null;
+        }
+
+        public void Deselect()
+        {
+            if (Selected != null)
+            {
+                Selected.Deselect();
+                Selected = null;
+            }
+        }
+
         public void DeleteSelected()
         {
-            if (selected != null)
+            if (Selected != null)
             {
-                if (selected is Sphere)
+                if (Selected is Sphere)
                 {
-                    Sphere delete = selected as Sphere;
-                    foreach (Spring spring in springs)
+                    Sphere delete = Selected as Sphere;
+                    //foreach (Spring spring in springs)
+                    for (int i = springs.Count - 1; i >= 0; --i)
                     {
-                        if (spring.Connects( delete ))
+                        if (springs[ i ].Connects( delete ))
                         {
-                            springs.Remove( spring );
+                            springs.RemoveAt( i );
                         }
                     }
                     spheres.Remove( delete );
                 }
 
-                if (selected is Board)
+                if (Selected is Board)
                 {
-                    boards.Remove( selected as Board );
+                    boards.Remove( Selected as Board );
                 }
 
-                if (selected is Spring)
+                if (Selected is Spring)
                 {
-                    springs.Remove( selected as Spring );
+                    springs.Remove( Selected as Spring );
                 }
 
-                selected = null;
+                Selected = null;
             }
         }
 
         public void MoveSelected( Vector delta )
         {
-            if (selected != null)
+            if (Selected != null)
             {
-                if (selected is Sphere)
+                if (Selected is Sphere)
                 {
-                    (selected as Sphere).Location += delta;
+                    (Selected as Sphere).Location += delta;
                 }
 
-                if (selected is Board)
+                if (Selected is Board)
                 {
-                    (selected as Board).line.Start += delta;
-                    (selected as Board).line.End += delta;
+                    (Selected as Board).line.Start += delta;
+                    (Selected as Board).line.End += delta;
                 }
             }
         }
@@ -462,6 +482,8 @@ namespace Physics
                     break;
                 }
             }
+
+            streamReader.Close();
         }
     }
 }

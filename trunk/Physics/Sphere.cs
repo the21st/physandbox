@@ -41,16 +41,20 @@ namespace Physics
 
                 this.move( time );
 
-                this.resolveOverlapping(); //%%% preco toto robi?
+                this.resolveOverlapping();
 
-                this.keepInBounds( world.Bounds ); //%%% sem dorobit steny on/off
-
-                this.applyGravity( time ); //%%% na zaciatku alebo na konci?
+                if (world.Walls)
+                    this.keepInBounds( world.Bounds );
             }
+
+            this.applyGravity( time );
         }
 
         public override void Render()
         {
+            Graphics g = world.Graph;
+            Color selectedClr = Clr;
+
             if (selected)
             {
                 if (phase >= maxChange)
@@ -62,37 +66,49 @@ namespace Physics
                 int green = Clr.G;
                 int blue = Clr.B;
 
-                if (brighter)
-                {
-                    red = red + 3 > 255 ? 255 : red + 3;
-                    green = green + 3 > 255 ? 255 : green + 3;
-                    blue = blue + 3 > 255 ? 255 : blue + 3;
-                    Clr = Color.FromArgb( red, green, blue );
-                    phase++;
-                }
+                if (red + 3 * phase > 255)
+                    red = 255;
                 else
-                {
-                    red = red - 3 < 0 ? 0 : red - 3;
-                    green = green - 3 < 0 ? 0 : green - 3;
-                    blue = blue - 3 < 0 ? 0 : blue - 3;
-                    Clr = Color.FromArgb( red, green, blue );
+                    if (red + 3 * phase < 0)
+                        red = 0;
+                    else
+                        red = red + 3 * phase;
+
+                if (green + 3 * phase > 255)
+                    green = 255;
+                else
+                    if (green + 3 * phase < 0)
+                        green = 0;
+                    else
+                        green = green + 3 * phase;
+
+                if (blue + 3 * phase > 255)
+                    blue = 255;
+                else
+                    if (blue + 3 * phase < 0)
+                        blue = 0;
+                    else
+                        blue = blue + 3 * phase;
+
+                if (brighter)
+                    phase++;
+                else
                     phase--;
-                }
+
+                selectedClr = Color.FromArgb( red, green, blue );
             }
 
-            Graphics g = world.Graph;
-            if (world.PrettySpheres)
+            if (world.hqSpheres)
             {
-                SolidBrush b = new SolidBrush( Clr );
+                SolidBrush b = new SolidBrush( selectedClr );
 
-                int red = Clr.R;
-                int green = Clr.G;
-                int blue = Clr.B;
+                int red = selectedClr.R;
+                int green = selectedClr.G;
+                int blue = selectedClr.B;
                 red = red - 50 < 0 ? 0 : red - 50;
                 green = green - 50 < 0 ? 0 : green - 50;
                 blue = blue - 50 < 0 ? 0 : blue - 50;
-                Color c = Color.FromArgb( red, green, blue );
-                Pen p = new Pen( c );
+                Pen p = new Pen( Color.FromArgb( red, green, blue ) );
                 p.Width = Radius * edgeWidth < 1 ? 1 : Radius * edgeWidth;
 
                 Sphere tmp = new Sphere( null );
@@ -107,7 +123,7 @@ namespace Physics
             }
             else
             {
-                Pen p = new Pen( Clr );
+                Pen p = new Pen( selectedClr );
                 g.DrawEllipse( p, this.GetRectangle() );
                 p.Dispose();
             }
@@ -161,7 +177,6 @@ namespace Physics
                     float r = deltaLocation.Abs();
 
                     Vector force = (World.G * this.GravityStrength * sphere.Mass / (r * r)) * deltaLocation.Normalized();
-                    //Vector force = (World.G * this.GravityStrength / (r * r)) * deltaLocation.Normalized(); // zahada: ktore?%%%
 
                     Vector acceleration = force / sphere.Mass;
 

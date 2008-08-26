@@ -12,7 +12,6 @@ namespace Physics
         protected const int maxChange = 15;
 
         public Color Clr;
-        protected Color originalClr;
         protected bool selected = false;
         protected bool brighter = true;
         protected int phase = 0;
@@ -27,7 +26,8 @@ namespace Physics
             if (!selected)
             {
                 selected = true;
-                originalClr = Clr;
+                phase = 0;
+                brighter = true;
             }
         }
 
@@ -36,7 +36,8 @@ namespace Physics
             if (selected)
             {
                 selected = false;
-                Clr = originalClr;
+                phase = 0;
+                brighter = true;
             }
         }
     }
