@@ -31,7 +31,7 @@ namespace Physics
 
             MaxID = 0;
             Gravity = new Vector( 0, 1 );
-            AirFriction = 0.001f;
+            AirFriction = 0.0005f;
             Collisions = true;
             spheres = new List<Sphere>();
             springs = new List<Spring>();
