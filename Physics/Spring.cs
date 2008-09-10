@@ -3,16 +3,20 @@ using System.Drawing;
 
 namespace Physics
 {
+    /// <summary>
+    /// Trieda, ktora reprezentuje pruzinu ako fyzikalny objekt.
+    /// Takato pruzina je obmedzena na spojenie dvoch roznych guli v ich stredoch.
+    /// </summary>
     public class Spring : PhysicsObject
     {
-        private const float densityPer100 = 9; // pocet "pruziniek" na 100px pri default width
+        private const float densityPer100 = 9; // pocet lomov na pruzine (vizualny prvok) na 100px pri default width
         private const int defaultWidth = 10;
 
         
-        public Sphere Sphere1, Sphere2;
-        public float k, Length, Width;
+        public Sphere Sphere1, Sphere2; // gule, ktore pruzina spaja
+        public float k, Length, Width; // pruzinova konstanta, dlzka pruziny, a sirka pruziny (vizualny prvok)
 
-        //float damping; %%%
+        //float damping; // %% nejak rozumne spracovat
 
         public Spring( World world )
         {
@@ -21,23 +25,21 @@ namespace Physics
 
             Clr = Color.Black;
             Width = defaultWidth;
-            //damping = 0.1f; %%%
         }
 
+        /// <summary>
+        /// Metoda, ktora, na zaklade fyzikalnych zakonov o pruzine vykona na tie-ktore gule istu silu, zodpovedajucu zadanemu casu.
+        /// </summary>
         public override void Tick( float time )
         {
             Vector deltaLocation = Sphere2.Location - Sphere1.Location;
 
             //if (deltaLocation.Abs() < length) return; // robi z pruziny gumu
 
-            //Vector force = deltaLocation * ((k * (deltaLocation.Abs() - length)) / deltaLocation.Abs());
             Vector force = deltaLocation.Normalized() * k * (deltaLocation.Abs() - Length);
 
             Vector acceleration1 = force / Sphere1.Mass;
             Vector acceleration2 = (-1) * (force / Sphere2.Mass);
-
-            //acceleration1 *= damping;%%%
-            //acceleration2 *= damping;
 
             acceleration1 -= (world.AirFriction * Sphere1.Velocity.Abs()) * Sphere1.Velocity;
             acceleration2 -= (world.AirFriction * Sphere2.Velocity.Abs()) * Sphere2.Velocity;
@@ -46,6 +48,9 @@ namespace Physics
             Sphere2.Velocity += time * acceleration2;
         }
 
+        /// <summary>
+        /// Vykresli pruzinu na platno World-u, ktoremu pruzina prislucha.
+        /// </summary>
         public override void Render()
         {
             Graphics g = world.Graph;
@@ -149,20 +154,34 @@ namespace Physics
             }
         }
 
-        public override string ToString()
+        /// <summary>
+        /// Zisti, ci pruzina spojuje zadanu gulu s nejakou inou.
+        /// </summary>
+        public bool Connects( Sphere sphere )
         {
-            string write = "SPR " +
-                           Sphere1.ID.ToString() + " " +
-                           Sphere2.ID.ToString() + " " +
-                           k.ToString() + " " +
-                           Length.ToString() + " " +
-                           Width.ToString() + " " +
-                           Clr.R.ToString() + " " + Clr.G.ToString() + " " + Clr.B.ToString() + " " +
-                           ID.ToString();
-            write = write.Replace( ',', '.' );
-            return write;
+            if (sphere == Sphere1 || sphere == Sphere2)
+                return true;
+            return false;
         }
 
+        /// <summary>
+        /// Zisti, ci sa pruzina nachadza niekde v okoli danych suradnic.
+        /// </summary>
+        public bool IsAtLocation( float x, float y )
+        {
+            Sphere tempSphere = new Sphere( null );
+            tempSphere.Location.x = x;
+            tempSphere.Location.y = y;
+            tempSphere.Radius = Width;
+
+            if (Geometry.Intersects( tempSphere, (new Line( Sphere1.Location, Sphere2.Location )) ))
+                return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Nacita vlastnosti pruziny zo stringu, ktory zodpoveda jej textovemu zapisu.
+        /// </summary>
         public void FromFile( string info )
         {
             if (System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator == ",")
@@ -185,27 +204,22 @@ namespace Physics
             k = float.Parse( s[ 3 ] );
             Length = float.Parse( s[ 4 ] );
             Width = float.Parse( s[ 5 ] );
-            Clr = Color.FromArgb( int.Parse( s[ 6 ] ), int.Parse( s[ 7 ] ), int.Parse( s[ 8] ) );
+            Clr = Color.FromArgb( int.Parse( s[ 6 ] ), int.Parse( s[ 7 ] ), int.Parse( s[ 8 ] ) );
             ID = long.Parse( s[ 9 ] );
         }
 
-        public bool Connects( Sphere sphere )
+        public override string ToString()
         {
-            if (sphere == Sphere1 || sphere == Sphere2)
-                return true;
-            return false;
-        }
-
-        public bool IsAtLocation( float x, float y )
-        {
-            Sphere tempSphere = new Sphere( null );
-            tempSphere.Location.x = x;
-            tempSphere.Location.y = y;
-            tempSphere.Radius = Width;
-
-            if (Geometry.Intersects( tempSphere, (new Line( Sphere1.Location, Sphere2.Location )) ))
-                return true;
-            return false;
+            string write = "SPR " +
+                           Sphere1.ID.ToString() + " " +
+                           Sphere2.ID.ToString() + " " +
+                           k.ToString() + " " +
+                           Length.ToString() + " " +
+                           Width.ToString() + " " +
+                           Clr.R.ToString() + " " + Clr.G.ToString() + " " + Clr.B.ToString() + " " +
+                           ID.ToString();
+            write = write.Replace( ',', '.' );
+            return write;
         }
     }
 }

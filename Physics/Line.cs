@@ -2,6 +2,9 @@
 
 namespace Physics
 {
+    /// <summary>
+    /// Trieda reprezentujuca priamku.
+    /// </summary>
     public class Line
     {
         public Vector Start, End;
