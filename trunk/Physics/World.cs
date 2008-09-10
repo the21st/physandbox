@@ -4,24 +4,30 @@ using System.Collections.Generic;
 
 namespace Physics
 {
+    /// <summary>
+    /// Trieda, ktora je v hierarchii kniznice physics najvyssie.
+    /// Obsahuje vacsinu ovladacich prvkov, pomocou nej sa naraba
+    /// s celym fyzikalnym svetom, ktory je spracovavany.
+    /// </summary>
     public class World
     {
-        public Graphics Graph;
-        public long MaxID;
+        public const float G = 10000;     // konstanta pouzita pri aplikacii newtonovho gravitacneho zakona (nezodpoveda skutocnej hodnote)
 
-        public List<Sphere> spheres;
-        public List<Board> boards;
-        public List<Spring> springs;
-        public PhysicsObject Selected;
 
-        public Rectangle Bounds;
-        public Vector Gravity;
-        public float AirFriction;
-        public bool Collisions, Walls;
+        public Graphics Graph;            // Grafika (platno) na ktore sa kresli svet
+        public long MaxID;                // zatial maximalne rozdane unikatne ID cislo
 
-        public bool hqSpheres, hqSprings;
+        public List<Sphere> spheres;      // zoznam gul
+        public List<Board> boards;        // zoznam dosiek
+        public List<Spring> springs;      // zoznam pruzin
+        public PhysicsObject Selected;    // pointer na objekt ktory je prave oznaceny
 
-        public const float G = 10000;
+        public Rectangle Bounds;          // hranice (steny) sveta
+        public Vector Gravity;            // smer a sila homogennej gravitacnej sily sveta
+        public float AirFriction;         // sila trenia vzduchu
+        public bool Collisions, Walls;    // zapnute-vypnute kolizie gul a hranice sveta
+
+        public bool hqSpheres, hqSprings; // tykaju sa vizualnej stranky - urcuju kvalitu vykreslenie gul a pruzin
 
 
         public World( Graphics graphics, Rectangle bounds )
@@ -44,6 +50,9 @@ namespace Physics
             hqSprings = true;
         }
 
+        /// <summary>
+        /// Metoda, ktora pohne celym svetom o zadanu casovu jednotku.
+        /// </summary>
         public void Tick( float time )
         {
             foreach (Spring spring in springs)
@@ -66,17 +75,12 @@ namespace Physics
                     }
                 }
             }
-            //foreach (Sphere sphere1 in spheres)
-            //{
-            //    foreach (Sphere sphere2 in spheres)
-            //    {
-            //        resolveCollision( sphere1, sphere2 );
-            //    }
-            //}
-
-            //%%% NIE VSETKY DVOJICE KOLIDUJ
+            // optimalizacia - nekontrolovat vsetky dvojice? %%
         }
 
+        /// <summary>
+        /// metoda ktora vykresli vsetko, co treba na platno.
+        /// </summary>
         public void Render()
         {
             foreach (Sphere sphere in spheres)
@@ -95,33 +99,11 @@ namespace Physics
             }
         }
 
-        public override string ToString()
-        {
-            string write = "ENV " +
-                           Gravity.x.ToString() + " " + Gravity.y.ToString() + " " +
-                           AirFriction.ToString() + " " +
-                           Collisions.ToString() + " " +
-                           Walls.ToString() + " " +
-                           MaxID.ToString();
-            write = write.Replace( ',', '.' );
-            return write;
-        }
-
-        public void FromFile( string info )
-        {
-            if (System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator == ",")
-                info = info.Replace( ".", "," );
-
-            string[] s = info.Split( ' ' );
-
-            Gravity.x = float.Parse( s[ 1 ] );
-            Gravity.y = float.Parse( s[ 2 ] );
-            AirFriction = float.Parse( s[ 3 ] );
-            Collisions = bool.Parse( s[ 4 ] );
-            Walls = bool.Parse( s[ 5 ] );
-            MaxID = long.Parse( s[ 6 ] );
-        }
-
+        /// <summary>
+        /// Metoda, ktora sa postara o koliziu dvoch sfer. 
+        /// Zisti, ci koliduju (koliduju ak sa v danom momente prekryvaju), a ak ano,
+        /// zmeni ich rychlosti a posunie ich von zo seba.
+        /// </summary>
         private static bool spheresCollision( Sphere sphere1, Sphere sphere2 )
         {
             if (sphere1.Stationary && sphere2.Stationary)
@@ -137,20 +119,24 @@ namespace Physics
 
             Vector deltaVelocity = sphere1.Velocity - sphere2.Velocity;
             Vector deltaLocation = sphere2.Location - sphere1.Location;
+
             if (deltaLocation.Abs() < 1)
             {
                 deltaLocation.x = 0.1f;
+                // toto je taky trochu "podvod", ktorym dosiahnem, ze pri kolizii nikdy nepracujem s dvomi gulami, ako keby boli na tom istom mieste, aj ked su.
             }
 
-            if (deltaLocation.Abs() < (sphere1.Radius + sphere2.Radius))
+            if (deltaLocation.Abs() < (sphere1.Radius + sphere2.Radius)) // kontrola, ci sa sfery prekryvaju, tj. ci koliduju
             {
+                // vacsina nasledujuceho kodu je fyzika kolizii prepisana do kodu
+
                 Vector deltaLocationNormalized = deltaLocation.Normalized();
                 float m1 = sphere1.Mass;
                 float m2 = sphere2.Mass;
 
                 if (sphere1.Stationary)
                 {
-                    // rozdelim rychlost na kolme zlozky oproti osi kolizie
+                    // rozdelim rychlost na kolme zlozky voci osi kolizie
                     Vector vx1 = Vector.Projection( sphere2.Velocity, deltaLocationNormalized );
                     Vector vy1 = sphere2.Velocity - vx1;
 
@@ -181,7 +167,7 @@ namespace Physics
                     }
                 }
 
-                // ---------movenutie guli von zo seba------------
+                // posunutie guli von zo seba
                 float move = (sphere1.Radius + sphere2.Radius) - deltaLocation.Abs();
 
                 if (sphere1.Stationary)
@@ -191,7 +177,8 @@ namespace Physics
                 }
                 else
                 {
-                    float p1 = (m2 / (m1 + m2)) * move;
+                    // tazsiu gulu posuvam menej ako lahsiu:
+                    float p1 = (m2 / (m1 + m2)) * move; // vypocitanie pomeru
                     float p2 = move - p1;
                     Vector move1 = -p1 * deltaLocationNormalized;
                     Vector move2 = p2 * deltaLocationNormalized;
@@ -208,71 +195,20 @@ namespace Physics
             spheres.Add( sphere );
         }
 
-        //public void AddSphere( float x, float y, float vx, float vy, int radius, float mass, float elasticity, float gravityStrength, Color color, bool stationary )
-        //{
-        //    Sphere sphere = new Sphere( this );
-        //    sphere.Location.x = x;
-        //    sphere.Location.y = y;
-        //    sphere.Velocity.x = vx;
-        //    sphere.Velocity.y = vy;
-        //    //Random r = new Random();
-        //    //sphere.Color = Color.FromArgb( r.Next( 256 ), r.Next( 256 ), r.Next( 256 ) );
-        //    sphere.Mass = mass;
-        //    sphere.Elasticity = elasticity;
-        //    sphere.Radius = radius;
-        //    sphere.GravityStrength = gravityStrength;
-        //    sphere.Clr = color;
-        //    sphere.Stationary = stationary;
-
-        //    sphere.Render();
-        //    spheres.Add( sphere );
-        //}
-
         public void AddSpring( Spring spring )
         {
             springs.Add( spring );
         }
-
-        //public void AddSpring( Sphere sphere1, Sphere sphere2, float k, float length )
-        //{
-        //    Spring spring = new Spring( this );
-
-        //    spring.Sphere1 = sphere1;
-        //    spring.Sphere2 = sphere2;
-        //    spring.k = k;
-        //    spring.Length = length;
-
-        //    springs.Add( spring );
-        //}
 
         public void AddBoard( Board board )
         {
             boards.Add( board );
         }
 
-        //public void AddBoard( float x1, float y1, float x2, float y2 )
-        //{
-        //    Board board = new Board( this );
-        //    board.line.Start.x = x1;
-        //    board.line.Start.y = y1;
-        //    board.line.End.x = x2;
-        //    board.line.End.y = y2;
-
-        //    board.Render();
-        //    boards.Add( board );
-        //}
-
-        //public void ChangeLocationOfSpheres( int dx, int dy )
-        //{
-        //    foreach (Sphere sphere in spheres)
-        //    {
-        //        sphere.Location.x += dx;
-        //        sphere.Location.y += dy;
-        //    }
-        //}
-
         public PhysicsObject SelectObject( float x, float y )
         {
+            // tu sa spytam kazdeho objektu ci sa nachadza na danych suradniciach
+
             foreach (Sphere sphere in spheres)
             {
                 if (sphere.IsAtLocation( x, y ))
@@ -319,6 +255,8 @@ namespace Physics
 
         public Sphere SelectSphere( float x, float y )
         {
+            // to iste ako SelectObject, akurat berie len sfery
+
             foreach (Sphere sphere in spheres)
             {
                 if (sphere.IsAtLocation( x, y ))
@@ -345,12 +283,15 @@ namespace Physics
 
         public void DeleteSelected()
         {
+            // co je oznacene removnem zo zoznamu objektov
+
             if (Selected != null)
             {
                 if (Selected is Sphere)
                 {
+                    // jediny problem je, ak vymazavam gulu - vtedy musim zmazat aj pruziny ktore su o nu pripevnene
+
                     Sphere delete = Selected as Sphere;
-                    //foreach (Spring spring in springs)
                     for (int i = springs.Count - 1; i >= 0; --i)
                     {
                         if (springs[ i ].Connects( delete ))
@@ -421,6 +362,9 @@ namespace Physics
             MaxID = 0;
         }
 
+        /// <summary>
+        /// Ulozi celu scenu aj s nastaveniami environmentu do suboru specifikovaneho parametrom.
+        /// </summary>
         public void SaveScene( string path )
         {
             System.IO.StreamWriter streamWriter = new System.IO.StreamWriter( path );
@@ -445,6 +389,9 @@ namespace Physics
             streamWriter.Close();
         }
 
+        /// <summary>
+        /// Nacita celu scenu aj s nastaveniami environmentu zo suboru.
+        /// </summary>
         public void LoadScene( string path )
         {
             this.ClearScene();
@@ -460,7 +407,7 @@ namespace Physics
                 switch (read.Substring( 0, 3 ))
                 {
                 case "ENV":
-                    this.FromFile( read );
+                    this.fromFile( read );
                     break;
                 case "SPH":
                     Sphere sphere = new Sphere( this );
@@ -484,6 +431,36 @@ namespace Physics
             }
 
             streamReader.Close();
+        }
+
+        /// <summary>
+        /// Nacita vlastnosti environmentu zo stringu, ktory zodpoveda textovemu zapisu World-u.
+        /// </summary>
+        private void fromFile( string info )
+        {
+            if (System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator == ",")
+                info = info.Replace( ".", "," );
+
+            string[] s = info.Split( ' ' );
+
+            Gravity.x = float.Parse( s[ 1 ] );
+            Gravity.y = float.Parse( s[ 2 ] );
+            AirFriction = float.Parse( s[ 3 ] );
+            Collisions = bool.Parse( s[ 4 ] );
+            Walls = bool.Parse( s[ 5 ] );
+            MaxID = long.Parse( s[ 6 ] );
+        }
+
+        public override string ToString()
+        {
+            string write = "ENV " +
+                           Gravity.x.ToString() + " " + Gravity.y.ToString() + " " +
+                           AirFriction.ToString() + " " +
+                           Collisions.ToString() + " " +
+                           Walls.ToString() + " " +
+                           MaxID.ToString();
+            write = write.Replace( ',', '.' );
+            return write;
         }
     }
 }

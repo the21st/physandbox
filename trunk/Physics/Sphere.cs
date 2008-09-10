@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace Physics
 {
+    /// <summary>
+    /// Trieda, ktora reprezentuje 2D gulu (kruh) ako fyzikalny objekt.
+    /// </summary>
     public class Sphere : PhysicsObject
     {
         private const float edgeWidth = 0.1f; //pomer okraju gule voci polomeru
@@ -30,13 +33,16 @@ namespace Physics
             GravityStrength = 0;
         }
 
+        /// <summary>
+        /// Metoda, ktora posunie gulu v zadanom case tak, ako to urcuju jej vlastnosti a vlastnosti World-u.
+        /// </summary>
         public override void Tick( float time )
         {
             if (!this.Stationary)
             {
                 Vector acceleration = world.Gravity;
 
-                acceleration -= (world.AirFriction * Velocity.Abs()) * Velocity;
+                acceleration -= (world.AirFriction * Velocity.Abs()) * Velocity; // aplikacia trenia vzduchu
                 Velocity += time * acceleration;
 
                 this.move( time );
@@ -50,6 +56,9 @@ namespace Physics
             this.applyGravity( time );
         }
 
+        /// <summary>
+        /// Vykresli gulu na platno World-u, ktoremu gula prislucha.
+        /// </summary>
         public override void Render()
         {
             Graphics g = world.Graph;
@@ -129,67 +138,45 @@ namespace Physics
             }
         }
 
-        public override string ToString()
-        {
-            string write = "SPH " +
-                           Location.x.ToString() + " " + Location.y.ToString() + " " +
-                           Velocity.x.ToString() + " " + Velocity.y.ToString() + " " +
-                           Radius.ToString() + " " + Mass.ToString() + " " +
-                           Elasticity.ToString() + " " + GravityStrength.ToString() + " " +
-                           Stationary.ToString() + " " +
-                           Clr.R.ToString() + " " + Clr.G.ToString() + " " + Clr.B.ToString() + " " +
-                           ID.ToString();
-            write = write.Replace( ',', '.' );
-            return write;
-        }
-
-        public void FromFile( string info )
-        {
-            if (System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator == ",")
-                info = info.Replace( ".", "," );
-
-            string[] s = info.Split( ' ' );
-
-            Location.x = float.Parse( s[ 1 ] );
-            Location.y = float.Parse( s[ 2 ] );
-            Velocity.x = float.Parse( s[ 3 ] );
-            Velocity.y = float.Parse( s[ 4 ] );
-            Radius = float.Parse( s[ 5 ] );
-            Mass = float.Parse( s[ 6 ] );
-            Elasticity = float.Parse( s[ 7 ] );
-            GravityStrength = float.Parse( s[ 8 ] );
-            Stationary = bool.Parse( s[ 9 ] );
-            Clr = Color.FromArgb( int.Parse( s[ 10 ] ), int.Parse( s[ 11 ] ), int.Parse( s[ 12 ] ) );
-            ID = long.Parse( s[ 13 ] );
-        }
-
+        /// <summary>
+        /// Ak ma tato gula gravitacnu silu, tak ju postupne aplikuje na vsetky ostatne gule.
+        /// </summary>
         private void applyGravity( float time )
         {
+            if (this.GravityStrength == 0)
+                return;
+
             List<Sphere> spheres = world.spheres;
             foreach (Sphere sphere in spheres)
             {
-                if (sphere != this && this.GravityStrength != 0 && !sphere.Stationary)
+                if (sphere != this && !sphere.Stationary)
                 {
                     Vector deltaLocation = this.Location - sphere.Location;
-                    if (deltaLocation.Abs() < 1)
-                        return;
+                    if (deltaLocation.Abs() > 1)  // ak su od seba gule vzdialene menej ako jeden pixel, sila nebude aplikovana (bola by prilis velka)
+                    {
+                        float r = deltaLocation.Abs();
 
-                    float r = deltaLocation.Abs();
+                        // podla newtonovho gravitacneho zakona:
+                        Vector force = (World.G * this.GravityStrength * sphere.Mass / (r * r)) * deltaLocation.Normalized();
 
-                    Vector force = (World.G * this.GravityStrength * sphere.Mass / (r * r)) * deltaLocation.Normalized();
+                        Vector acceleration = force / sphere.Mass;
 
-                    Vector acceleration = force / sphere.Mass;
+                        acceleration -= (world.AirFriction * sphere.Velocity.Abs()) * sphere.Velocity; // trenie vzduchu
 
-                    acceleration -= (world.AirFriction * sphere.Velocity.Abs()) * sphere.Velocity;
-
-                    sphere.Velocity += time * acceleration;
+                        sphere.Velocity += time * acceleration;
+                    }
                 }
             }
         }
 
+        /// <summary>
+        /// Udrzuje gulu vovnutri hranic sveta.
+        /// </summary>
         private void keepInBounds( Rectangle bounds )
         {
-            // odrazanie od stien so zakonom zachovania energie (kin+pot) %%%
+            // dorobit odrazanie od stien so zakonom zachovania energie (kinetickej + potencialnej) %%
+
+            // vylepsit "trenie" pouzite v tejto metode %%
 
             // -------STROP-------
             if (Location.y - Radius < bounds.Top)
@@ -214,6 +201,7 @@ namespace Physics
             {
                 if (Velocity.x < 0)
                     Velocity.x = -Velocity.x * Elasticity;
+                Velocity.y = 0.95f * Velocity.y; // "trenie"
                 Location.x = Radius;
             }
 
@@ -222,10 +210,14 @@ namespace Physics
             {
                 if (Velocity.x > 0)
                     Velocity.x = -Velocity.x * Elasticity;
+                Velocity.y = 0.95f * Velocity.y; // "trenie"
                 Location.x = bounds.Right - Radius;
             }
         }
 
+        /// <summary>
+        /// Posuva gulu tak, aby sa neprekryvala s doskami.
+        /// </summary>
         private void resolveOverlapping()
         {
             List<Board> boards = world.boards;
@@ -238,18 +230,24 @@ namespace Physics
             }
         }
 
+        /// <summary>
+        /// Na zaklade polohy a rychlosti gule skontroluje ci v jej drahe pohybu prekaza nejaka doska.
+        /// Ak ano, spracuje koliziu a odraz. Ak nie, jednoducho pohne gulou na jej miesto (pozicia+rychlost).
+        /// </summary>
         private void move( float time )
         {
             List<Board> boards = world.boards;
-            List<CollisionInfo> collisions = new List<CollisionInfo>();
+            List<CollisionInfo> collisions = new List<CollisionInfo>(); // zoznam vsetkych kolizii, ktore by mohli nastat v drahe pohybu gule
 
             foreach (Board board in boards)
             {
+                // naplnanie zoznamu kolizii
                 CollisionInfo collision = Geometry.Collision( this, board, time );
                 if (collision != null)
                     collisions.Add( collision );
             }
 
+            // zistenie, ktora z kolizii je najblizsia, a teda by nastala prva, ak by bol pohyb gule kontinualny (spojity)
             CollisionInfo closest = null;
 
             if (collisions.Count > 0)
@@ -274,11 +272,11 @@ namespace Physics
                 return;
             }
 
-            Board b = closest.With;
+            Board b = closest.With; // b je doska, s ktorou nastala kolizia
 
             if (Geometry.Overlap( this, b ) == null)
             {
-                if (closest.Type == 1)
+                if (closest.Type == 1) // to znamena, ze gula narazi do usecky samotnej, a nie do jednej z jej koncovych bodov
                 {
                     Vector vx1 = Vector.Projection( this.Velocity, b.line.End - b.line.Start );
                     Vector vy1 = this.Velocity - vx1;
@@ -302,7 +300,7 @@ namespace Physics
                     this.Location = newLocation;
                 }
 
-                if (closest.Type == 2)
+                if (closest.Type == 2) // to znamena, ze gula narazi do jedneho z koncovych bodov usecky
                 {
                     Vector p1 = b.line.Start;
                     Vector p2 = b.line.End;
@@ -331,6 +329,10 @@ namespace Physics
             }
         }
 
+        /// <summary>
+        /// Vrati Rectangle (v skutocnosti to vzdy bude stvorec) ktoremu je gula vpisana.
+        /// Pouziva sa najma pri vykreslovani gule.
+        /// </summary>
         public Rectangle GetRectangle()
         {
             try
@@ -339,11 +341,14 @@ namespace Physics
             }
             catch (OverflowException e)
             {
-                // nejaky error?
+                // toto sa obcas, ked gula odleti prilis daleko, stane. ale vtedy ju aj tak netreba vykreslit, cize to nevadi
             }
             return new Rectangle( -1, -1, -1, -1 );
         }
 
+        /// <summary>
+        /// Zisti, ci sa gula nachadza v danych suradniciach (
+        /// </summary>
         public bool IsAtLocation( float x, float y )
         {
             Vector dist = new Vector( x, y ) - this.Location;
@@ -351,6 +356,43 @@ namespace Physics
             if (dist.Abs() < this.Radius)
                 return true;
             return false;
+        }
+
+        /// <summary>
+        /// Nacita vlastnosti gule zo stringu, ktory zodpoveda jej textovemu zapisu.
+        /// </summary>
+        public void FromFile( string info )
+        {
+            if (System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator == ",")
+                info = info.Replace( ".", "," );
+
+            string[] s = info.Split( ' ' );
+
+            Location.x = float.Parse( s[ 1 ] );
+            Location.y = float.Parse( s[ 2 ] );
+            Velocity.x = float.Parse( s[ 3 ] );
+            Velocity.y = float.Parse( s[ 4 ] );
+            Radius = float.Parse( s[ 5 ] );
+            Mass = float.Parse( s[ 6 ] );
+            Elasticity = float.Parse( s[ 7 ] );
+            GravityStrength = float.Parse( s[ 8 ] );
+            Stationary = bool.Parse( s[ 9 ] );
+            Clr = Color.FromArgb( int.Parse( s[ 10 ] ), int.Parse( s[ 11 ] ), int.Parse( s[ 12 ] ) );
+            ID = long.Parse( s[ 13 ] );
+        }
+
+        public override string ToString()
+        {
+            string write = "SPH " +
+                           Location.x.ToString() + " " + Location.y.ToString() + " " +
+                           Velocity.x.ToString() + " " + Velocity.y.ToString() + " " +
+                           Radius.ToString() + " " + Mass.ToString() + " " +
+                           Elasticity.ToString() + " " + GravityStrength.ToString() + " " +
+                           Stationary.ToString() + " " +
+                           Clr.R.ToString() + " " + Clr.G.ToString() + " " + Clr.B.ToString() + " " +
+                           ID.ToString();
+            write = write.Replace( ',', '.' );
+            return write;
         }
     }
 }
