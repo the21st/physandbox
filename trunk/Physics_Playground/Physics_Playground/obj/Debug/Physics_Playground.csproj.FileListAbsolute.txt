@@ -23,3 +23,17 @@ C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics_Playground\Physics_
 C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics_Playground\Physics_Playground\bin\Debug\Physics_Playground.application
 C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics_Playground\Physics_Playground\obj\Debug\Physics_Playground.exe.manifest
 C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics_Playground\Physics_Playground\obj\Debug\Physics_Playground.application
+C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics_Playground\Physics_Playground\bin\Debug\Physics_Playground.exe.manifest
+C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics_Playground\Physics_Playground\bin\Debug\Physics_Playground.application
+C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics_Playground\Physics_Playground\bin\Debug\Physics_Playground.exe
+C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics_Playground\Physics_Playground\bin\Debug\Physics_Playground.pdb
+C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics_Playground\Physics_Playground\bin\Debug\Physics.pdb
+C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics_Playground\Physics_Playground\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics_Playground\Physics_Playground\obj\Debug\Physics_Playground.Form1.resources
+C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics_Playground\Physics_Playground\obj\Debug\Physics_Playground.OptionsForm.resources
+C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics_Playground\Physics_Playground\obj\Debug\Physics_Playground.Properties.Resources.resources
+C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics_Playground\Physics_Playground\obj\Debug\Physics_Playground.csproj.GenerateResource.Cache
+C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics_Playground\Physics_Playground\obj\Debug\Physics_Playground.exe.manifest
+C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics_Playground\Physics_Playground\obj\Debug\Physics_Playground.application
+C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics_Playground\Physics_Playground\obj\Debug\Physics_Playground.exe
+C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics_Playground\Physics_Playground\obj\Debug\Physics_Playground.pdb
