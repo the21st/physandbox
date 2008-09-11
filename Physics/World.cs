@@ -146,6 +146,9 @@ namespace Physics
                 }
                 else
                 {
+                    // kontrola, ci sa skutocne v aktualnom momente sfery hybu oproti sebe
+                    // moze sa stat, ze nie - ak sa sfery hybu prilis rychlo / casovy skok je prilis velky
+                    // a sfery cez seba "preskocia", ale stale sa prekryvaju
                     if (Vector.ProjectionLength( deltaVelocity, deltaLocation ) > 0)
                     {
                         // zlozky rychlosti leziace na osi kolizie
@@ -156,6 +159,7 @@ namespace Physics
                         Vector vy1 = sphere1.Velocity - vx1;
                         Vector vy2 = sphere2.Velocity - vx2;
 
+                        // vzorec
                         Vector newVx1 = (vx1 * (m1 - m2) + 2 * m2 * vx2) / (m1 + m2);
                         Vector newVx2 = (vx2 * (m2 - m1) + 2 * m1 * vx1) / (m1 + m2);
 
