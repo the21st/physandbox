@@ -1,5 +1,0 @@
-C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics\bin\Debug\Physics.dll
-C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics\bin\Debug\Physics.pdb
-C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics\obj\Debug\ResolveAssemblyReference.cache
-C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics\obj\Debug\Physics.dll
-C:\Users\Simon\Documents\Visual Studio 2008\Projects\Physics\Physics\obj\Debug\Physics.pdb
